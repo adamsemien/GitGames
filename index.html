@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
 <title>GitGames — Learn Git, GitHub & AI Coding by Playing</title>
-<meta name="description" content="A neon arcade that teaches you Git, GitHub, Claude Code and Codex. Tap to build real commands. No typing required." />
+<meta name="description" content="A neon arcade that teaches you Git, GitHub, APIs, tooling, Claude Code, Ghostty and Codex. Tap or type real commands." />
 <meta name="theme-color" content="#07070d" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -25,7 +25,7 @@
       <span class="logo-mark">&lt;/&gt;</span>
       <h1>Git<span>Games</span></h1>
     </div>
-    <p class="tagline">Become dangerous with Git, GitHub &amp; AI coding tools.<br/>Tap to play. No typing required.</p>
+    <p class="tagline">Idea to launched, one level at a time.<br/>Tap it or type it — your call.</p>
   </header>
 
   <section class="stats-strip" aria-label="Your stats">
@@ -35,11 +35,24 @@
     <div class="stat"><b id="stat-streak">0</b><span>Best streak</span></div>
   </section>
 
+  <section class="quick-row">
+    <button class="quick" id="btn-review">
+      <span class="q-ico">🎯</span>
+      <span class="q-txt"><b>Review</b><i id="review-sub">Nothing due yet</i></span>
+      <span class="q-badge" id="review-badge" hidden>0</span>
+    </button>
+    <button class="quick" id="btn-search">
+      <span class="q-ico">🔍</span>
+      <span class="q-txt"><b>Search</b><i>Find any level or term</i></span>
+    </button>
+  </section>
+
   <section id="track-list" class="track-list" aria-label="Tracks"></section>
 
   <section class="home-extra">
     <button class="ghost-btn" id="btn-glossary">📖 Glossary — every term, plain English</button>
     <button class="ghost-btn" id="btn-cheats">⚡ Cheat sheet — the commands that matter</button>
+    <button class="ghost-btn" id="btn-sync">🔗 Move progress to another device</button>
     <button class="ghost-btn danger" id="btn-reset">↺ Reset all progress</button>
     <p class="footer-note">Built with Claude Code · <a href="https://github.com/adamsemien/GitGames" target="_blank" rel="noopener">source on GitHub</a></p>
   </section>
@@ -67,7 +80,21 @@
   <div id="stage" class="stage"></div>
 </main>
 
-<!-- ============ READER (glossary / cheats) ============ -->
+<!-- ============ SEARCH ============ -->
+<main id="search" class="screen">
+  <header class="bar">
+    <button class="icon-btn" data-back="home" aria-label="Back">‹</button>
+    <div class="bar-title"><b>Search</b><span id="search-sub">Levels, lessons and terms</span></div>
+    <div style="width:44px"></div>
+  </header>
+  <div class="search-wrap">
+    <input id="search-input" class="search-input" type="search" placeholder="worktree, webhook, sandbox…"
+           autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" />
+  </div>
+  <div id="search-results" class="search-results"></div>
+</main>
+
+<!-- ============ READER (glossary / cheats / sync) ============ -->
 <main id="reader" class="screen">
   <header class="bar">
     <button class="icon-btn" data-back="home" aria-label="Back">‹</button>
@@ -77,10 +104,25 @@
   <div id="reader-body" class="reader-body"></div>
 </main>
 
+<!-- ============ TERM SHEET ============ -->
+<div id="sheet" class="sheet" hidden>
+  <div class="sheet-bg" data-close-sheet></div>
+  <div class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="sheet-term">
+    <div class="sheet-grip"></div>
+    <h3 id="sheet-term"></h3>
+    <p id="sheet-def"></p>
+    <div id="sheet-cmd" class="gl-cmd" hidden></div>
+    <div class="sheet-acts">
+      <button class="btn sec" id="sheet-glossary">Open full glossary</button>
+      <button class="btn" data-close-sheet>Got it</button>
+    </div>
+  </div>
+</div>
+
 <!-- ============ TOASTS / OVERLAYS ============ -->
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 <div id="confetti" aria-hidden="true"></div>
 
-<script type="module" src="app.js?v=3"></script>
+<script type="module" src="app.js?v=4"></script>
 </body>
 </html>
