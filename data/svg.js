@@ -88,3 +88,48 @@ export const detachedHead = wrap(520, 150,
   txt(430, 46, 'main', DIM, 11) + txt(285, 40, 'HEAD', CY, 12) + txt(285, 118, 'you are standing here,', CY, 10) +
   txt(285, 134, 'not on any branch — commits here can get lost', DIM, 10)
 );
+
+/* ---- phase 1 diagrams ---- */
+
+export const httpCycle = wrap(540, 210,
+  box(15, 22, 175, 60, CY, 'Your app', 'the client') +
+  box(350, 22, 175, 60, MG, 'Their server', 'the API') +
+  line(190, 40, 350, 40, LM) + txt(270, 32, 'REQUEST', LM, 11) +
+  txt(270, 58, 'GET /v1/users/42', DIM, 10) +
+  line(350, 68, 190, 68, AM) + txt(270, 84, 'RESPONSE', AM, 11) +
+  txt(270, 104, '200 OK  +  { "id": 42, … }', DIM, 10) +
+  txt(270, 142, 'method + path + headers + body  →  status + headers + body', '#eef0ff', 11) +
+  txt(270, 168, 'that is the entire protocol. everything else is detail.', DIM, 10) +
+  txt(270, 192, 'stateless: the server remembers nothing between calls', VI, 10)
+);
+
+export const webhookFlow = wrap(540, 235,
+  txt(12, 18, 'NORMAL API — you ask, they answer', CY, 11, 'start') +
+  box(20, 30, 160, 46, CY, 'You') + box(340, 30, 160, 46, DIM, 'Stripe') +
+  line(180, 44, 340, 44, CY) + txt(260, 38, '"did it pay?"', CY, 10) +
+  line(340, 62, 180, 62, DIM) + txt(260, 74, '"not yet"  ×1000', DIM, 10) +
+  txt(12, 128, 'WEBHOOK — they call you, once, when it happens', MG, 11, 'start') +
+  box(20, 140, 160, 46, MG, 'Your endpoint') + box(340, 140, 160, 46, DIM, 'Stripe') +
+  line(340, 163, 180, 163, MG) + txt(260, 156, 'POST  payment.succeeded', MG, 10) +
+  txt(270, 212, 'the call is inverted — which is why it needs its own auth', AM, 11)
+);
+
+export const harnessLoop = wrap(540, 225,
+  box(190, 14, 160, 44, VI, 'MODEL', 'predicts text') +
+  line(270, 58, 270, 84, VI) +
+  box(160, 84, 220, 48, CY, 'HARNESS', 'runs the loop, owns the tools') +
+  line(160, 108, 70, 108, LM) + line(380, 108, 470, 108, AM) +
+  box(15, 140, 120, 42, LM, 'TOOLS', 'read · bash') +
+  box(390, 140, 130, 42, AM, 'PERMISSION', 'ask · allow · deny') +
+  txt(270, 158, 'prompt → model picks a tool → harness runs it', '#eef0ff', 11) +
+  txt(270, 180, '→ result goes back in → repeat until done', '#eef0ff', 11) +
+  txt(270, 210, 'the model cannot touch your disk. the harness can.', MG, 11)
+);
+
+export const envLayers = wrap(540, 240,
+  box(15, 20, 505, 40, DIM, 'YOUR MACHINE — everything is reachable') +
+  box(35, 72, 470, 40, CY, 'CONTAINER / VM — its own filesystem and network') +
+  box(60, 124, 425, 40, LM, 'SANDBOX — a folder and a rule set') +
+  box(90, 176, 370, 40, AM, 'READ-ONLY — it can look, it cannot change') +
+  txt(270, 232, 'each layer shrinks the blast radius. pick by what a mistake costs.', DIM, 10)
+);
