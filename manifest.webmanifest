@@ -1,0 +1,14 @@
+{
+  "name": "GitGames — Learn Git, GitHub & AI Coding",
+  "short_name": "GitGames",
+  "description": "A neon arcade that teaches Git, GitHub, Claude Code, Ghostty and Codex. Tap to build real commands.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#07070d",
+  "theme_color": "#07070d",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

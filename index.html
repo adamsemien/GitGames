@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+<title>GitGames — Learn Git, GitHub & AI Coding by Playing</title>
+<meta name="description" content="A neon arcade that teaches you Git, GitHub, Claude Code and Codex. Tap to build real commands. No typing required." />
+<meta name="theme-color" content="#07070d" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="GitGames" />
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="apple-touch-icon" href="icon.svg" />
+<link rel="icon" href="icon.svg" type="image/svg+xml" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<div id="stars" aria-hidden="true"></div>
+
+<!-- ============ HOME ============ -->
+<main id="home" class="screen active">
+  <header class="home-head">
+    <div class="logo">
+      <span class="logo-mark">&lt;/&gt;</span>
+      <h1>Git<span>Games</span></h1>
+    </div>
+    <p class="tagline">Become dangerous with Git, GitHub &amp; AI coding tools.<br/>Tap to play. No typing required.</p>
+  </header>
+
+  <section class="stats-strip" aria-label="Your stats">
+    <div class="stat"><b id="stat-xp">0</b><span>XP</span></div>
+    <div class="stat"><b id="stat-rank">Rookie</b><span>Rank</span></div>
+    <div class="stat"><b id="stat-done">0</b><span>Levels</span></div>
+    <div class="stat"><b id="stat-streak">0</b><span>Best streak</span></div>
+  </section>
+
+  <section id="track-list" class="track-list" aria-label="Tracks"></section>
+
+  <section class="home-extra">
+    <button class="ghost-btn" id="btn-glossary">📖 Glossary — every term, plain English</button>
+    <button class="ghost-btn" id="btn-cheats">⚡ Cheat sheet — the commands that matter</button>
+    <button class="ghost-btn danger" id="btn-reset">↺ Reset all progress</button>
+    <p class="footer-note">Built with Claude Code · <a href="https://github.com/adamsemien/GitGames" target="_blank" rel="noopener">source on GitHub</a></p>
+  </section>
+</main>
+
+<!-- ============ LEVEL SELECT ============ -->
+<main id="levels" class="screen">
+  <header class="bar">
+    <button class="icon-btn" data-back="home" aria-label="Back">‹</button>
+    <div class="bar-title"><b id="lv-track-name">Track</b><span id="lv-track-sub">0 / 0</span></div>
+    <div class="bar-xp" id="lv-track-xp">0 XP</div>
+  </header>
+  <div class="progress-rail"><div class="progress-fill" id="lv-progress"></div></div>
+  <div id="chapter-list" class="chapter-list"></div>
+</main>
+
+<!-- ============ PLAY ============ -->
+<main id="play" class="screen">
+  <header class="bar">
+    <button class="icon-btn" data-back="levels" aria-label="Back">‹</button>
+    <div class="bar-title"><b id="play-title">Level</b><span id="play-sub">Chapter</span></div>
+    <div class="combo" id="combo">🔥<b>0</b></div>
+  </header>
+  <div class="progress-rail"><div class="progress-fill" id="play-progress"></div></div>
+  <div id="stage" class="stage"></div>
+</main>
+
+<!-- ============ READER (glossary / cheats) ============ -->
+<main id="reader" class="screen">
+  <header class="bar">
+    <button class="icon-btn" data-back="home" aria-label="Back">‹</button>
+    <div class="bar-title"><b id="reader-title">Reference</b><span id="reader-sub"></span></div>
+    <div style="width:44px"></div>
+  </header>
+  <div id="reader-body" class="reader-body"></div>
+</main>
+
+<!-- ============ TOASTS / OVERLAYS ============ -->
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<div id="confetti" aria-hidden="true"></div>
+
+<script type="module" src="app.js?v=3"></script>
+</body>
+</html>
