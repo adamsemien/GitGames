@@ -142,8 +142,8 @@ export const ghostty = {
           steps: [
             L('The setting that fixes word-jumping', [
               { p: 'By default macOS treats Option as a "type a special character" key — Option+B gives <code>∫</code>. Terminal programs expect Option to be <strong>Alt</strong>, which is what powers word-by-word cursor movement.' },
-              { term: 'macos-option-as-alt = true\n\n<span class="o"># then these work everywhere:</span>\n<span class="h">⌥←  ⌥→</span>    move one word left / right\n<span class="h">⌃A  ⌃E</span>    jump to start / end of line\n<span class="h">⌃W</span>         delete the previous word\n<span class="h">⌃U</span>         clear the whole line\n<span class="h">⌃R</span>         search command history\n<span class="h">⌃L</span>         clear screen' },
-              { call: { k: 'tip', t: 'These are readline, not Ghostty:', p: 'Ctrl+A/E/W/U/R work in zsh, bash, psql, node, python — anything using readline. Learning six of them is a permanent speed upgrade everywhere, forever.' } }
+              { term: 'macos-option-as-alt = true\n\n<span class="o"># without it, ⌥← types a symbol instead of moving:</span>\n<span class="h">⌥←  ⌥→</span>    move one word left / right' },
+              { call: { k: 'tip', t: 'This unlocks a whole track:', p: 'Word-jumping is one chord out of about a dozen that let you drive the command line without arrow keys or backspace. They belong to <b>readline</b> — the shell, not Ghostty — so they work in zsh, bash, psql, node and python too. <b>Terminal 101</b> drills every one of them as keystroke golf.' } }
             ]),
             Q('<code>⌃R</code> in your shell does what?',
               ['Reloads the config', 'Reverse-searches your command history', 'Redraws the screen', 'Restarts the shell'],

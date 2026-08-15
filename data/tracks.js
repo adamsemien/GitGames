@@ -11,9 +11,11 @@
    { t:'lesson', title, body:[ {p}|{h}|{ul}|{term}|{svg}|{call:{k,t,p}} ], cta? }
    { t:'quiz',   q, choices:[...], a:<index>, why }
    { t:'build',  brief, answer:[tokens], chips:[decoys], why, hint?, hint2? }
+   { t:'keys',   goal, line, cursor?, target:{line,cursor?}, par, keys:[labels], reveal, why, hint? }
 
    Node ids must be unique across ALL tracks — they key saved progress.
    ============================================================ */
+import { terminal } from './terminal.js';
 import { github } from './github.js';
 import { claudeCode } from './claude-code.js';
 import { ghostty } from './ghostty.js';
@@ -23,4 +25,4 @@ import { apis } from './apis.js';
 import { tooling } from './tooling.js';
 import { harness } from './harness.js';
 
-export const TRACKS = [github, apis, tooling, harness, claudeCode, codex, ghostty, vibe];
+export const TRACKS = [terminal, github, apis, tooling, harness, claudeCode, codex, ghostty, vibe];
