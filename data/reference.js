@@ -118,7 +118,7 @@ export const GLOSSARY = [
       { term: 'Harness', def: 'The program that runs the agent loop: offers tools, executes the ones the model requests, feeds results back, enforces permissions. Claude Code and Codex are harnesses.' },
       { term: 'Agent', def: 'A model running inside a harness with tools and a goal. The emergent thing, not a separate product.' },
       { term: 'Agent loop', def: 'Goal in → model requests a tool → harness runs it → result appended → repeat. Every agent product is this plus opinions.' },
-      { term: 'Tool', def: 'A capability the harness offers the model — read, write, bash, search, fetch. Bash is the one with an unbounded worst case.' },
+      { term: 'Agent tool', def: 'A capability the harness offers the model — read, write, bash, search, fetch. Bash is the one with an unbounded worst case.' },
       { term: 'Context window', also: ['context'], def: 'Everything currently in the conversation. It all competes for attention, which is why long sessions degrade and <code>/clear</code> matters.' },
       { term: 'Token', def: 'The unit models read and write in — roughly ¾ of a word. Context limits and costs are both measured in these.' },
       { term: 'Subagent', def: 'A separate agent with its own context and tools. Returns a summary, keeping its exploration out of your main conversation.' },
@@ -135,17 +135,46 @@ export const GLOSSARY = [
     ]
   },
   {
-    group: 'Terminal & shell',
+    group: 'Terminal — the basics',
     items: [
-      { term: 'Terminal emulator', also: ['terminal'], def: 'The app window — Ghostty, iTerm2. Owns fonts, splits, tabs and hotkeys. Runs no commands itself.' },
-      { term: 'Shell', def: 'The program inside the window (zsh, bash, fish) that interprets and runs what you type. Configured in <code>~/.zshrc</code>.' },
+      { term: 'Command line', also: ['CLI'], def: 'Driving a computer by typing commands instead of clicking. "CLI" stands for command-line interface — the opposite of a GUI, the windows-and-buttons kind.' },
+      { term: 'Terminal emulator', also: ['terminal'], def: 'The app window — Ghostty, iTerm2, Terminal.app. Owns fonts, colours, tabs, splits and copy/paste. It runs no commands itself; it just draws text and passes your keystrokes down.' },
+      { term: 'Shell', def: 'The program running inside the terminal window that actually reads your line, works out what you meant, and launches programs. On a modern Mac that is <b>zsh</b>.' },
+      { term: 'zsh', def: 'The Z shell — the default shell on macOS since 2019. Fully compatible with most bash instructions you will find online. Its config file is <code>~/.zshrc</code>.', url: 'https://zsh.sourceforge.io' },
+      { term: 'bash', def: 'The shell that was standard everywhere for decades, and still the default on most Linux servers. Nearly all tutorials are written for it; nearly all of them work in zsh too.' },
+      { term: 'fish', def: 'A third shell, built around good defaults — syntax highlighting and autosuggestions out of the box. Deliberately not fully bash-compatible, so some copy-pasted commands need adjusting.', url: 'https://fishshell.com' },
+      { term: 'Prompt', def: 'The text before your cursor telling you where you are — often the folder, the git branch, and a <code>$</code>. Drawn by the shell, and entirely cosmetic.' },
+      { term: '~/.zshrc', also: ['zshrc', 'shell config'], def: 'Your zsh config file, in your home folder. Aliases, <code>$PATH</code> changes and shell options go here. It is re-read every time you open a new terminal.' },
+      { term: '$PATH', also: ['PATH'], def: 'The list of folders the shell searches when you type a command name. "command not found" almost always means the program exists but its folder is not in your PATH.', cmd: 'echo $PATH' },
+      { term: 'Alias', def: 'A shortcut you define for a longer command. Put it in <code>~/.zshrc</code> and it is there in every new terminal.', cmd: 'alias gs="git status"' },
+      { term: 'Home directory', also: ['home folder', '~'], def: 'Your personal folder — <code>/Users/you</code> on a Mac. The <code>~</code> character is shorthand for it, so <code>~/projects</code> means <code>/Users/you/projects</code>.' },
+      { term: 'Working directory', also: ['current directory'], def: 'The folder your terminal is currently "standing in". Commands act relative to it. <code>pwd</code> prints it; <code>cd</code> changes it.', cmd: 'pwd' },
+      { term: 'Argument', def: 'A word you pass to a command to tell it what to act on. In <code>rm notes.txt</code>, the argument is <code>notes.txt</code>.' },
+      { term: 'Flag', also: ['option', 'switch'], def: 'A setting passed to a command, written with dashes — <code>-l</code> short form, <code>--long</code> long form. Single-letter flags usually combine: <code>-la</code> is <code>-l -a</code>.' },
+      { term: 'readline', def: 'The tiny line editor built into the shell. It is what makes ⌃A, ⌃E, ⌃W and ⌃R work — and it is in the Python REPL, node and psql too.' },
+      { term: 'Kill ring', def: 'The shell\'s own buffer holding text you deleted with ⌃W, ⌃U or ⌃K. <code>⌃Y</code> pastes it back. Completely separate from the ⌘C system clipboard.' },
+      { term: 'Tab completion', def: 'Pressing Tab to finish a command, path or branch name. One press completes what it can; two presses list the options when it cannot decide.' },
+      { term: 'Glob', also: ['wildcard'], def: 'A filename pattern. <code>*</code> matches anything, <code>?</code> one character, <code>**</code> any depth of folders. The shell expands it to real filenames before the command runs.' },
+      { term: 'Flow control', def: 'The old terminal feature behind ⌃S (pause output) and ⌃Q (resume). It is why a terminal can look frozen when nothing is actually wrong.' },
       { term: 'Shell integration', def: 'Markers the shell emits so the terminal knows where each command begins and ends — powers prompt-jumping and smarter selection.' },
       { term: 'Quick terminal', def: 'Ghostty\'s global drop-down terminal, toggled from any app with a <code>global:</code> keybind.' },
       { term: 'stdin', def: 'The input stream a program reads. Piping into a command feeds its stdin — which is what makes tools composable.' },
       { term: 'stdout', def: 'The output stream a program writes. Piping sends it to the next command instead of your screen.' },
       { term: 'Pipe', def: 'The <code>|</code> character. Sends one command\'s output into the next command\'s input.', cmd: 'curl -s https://api.example.com/users | jq \'.[].email\'' },
-      { term: 'ripgrep', also: ['rg'], def: 'A very fast code search tool that respects <code>.gitignore</code> by default.' },
-      { term: 'jq', def: 'A command-line JSON processor. Slices and filters API responses without writing a script.' }
+      { term: 'Pager', def: 'A program that holds long output on screen and lets you page through it — usually <code>less</code>. <code>space</code> pages down, <code>/</code> searches, <code>q</code> quits.' }
+    ]
+  },
+  {
+    group: 'Apps and tools',
+    items: [
+      { term: 'Ghostty', def: 'A fast, native terminal emulator for macOS and Linux. GPU-accelerated, sane defaults, one plain-text config file, and no plugin system by design.', url: 'https://ghostty.org' },
+      { term: 'iTerm2', def: 'The long-standing macOS terminal emulator. Enormously configurable, with a GUI for every setting rather than a config file.', url: 'https://iterm2.com' },
+      { term: 'Starship', def: 'A prompt you drop into any shell. Shows your git branch, dirty state and language versions at a glance.', url: 'https://starship.rs', cmd: 'brew install starship' },
+      { term: 'ripgrep', also: ['rg'], def: 'A very fast code search tool that respects <code>.gitignore</code> by default.', url: 'https://github.com/BurntSushi/ripgrep', cmd: 'rg "TODO" --type ts' },
+      { term: 'fzf', def: 'A fuzzy finder for the terminal. Its best trick is rebinding ⌃R so history search becomes an interactive, filterable list.', url: 'https://github.com/junegunn/fzf' },
+      { term: 'zoxide', def: 'A smarter <code>cd</code>. Learns the folders you visit, so <code>z proj</code> jumps to the one you meant.', url: 'https://github.com/ajeetdsouza/zoxide' },
+      { term: 'jq', def: 'A command-line JSON processor. Slices and filters API responses without writing a script.', url: 'https://jqlang.github.io/jq/', cmd: 'curl -s api.example.com/users | jq \'.[].email\'' },
+      { term: 'gh', def: 'GitHub on the command line — open pull requests, check out someone else\'s PR, read CI results without opening a browser.', url: 'https://cli.github.com', cmd: 'gh pr create --fill' }
     ]
   },
   {
@@ -240,9 +269,28 @@ export const CHEATS = [
     ]
   },
   {
-    group: 'Shell (readline — works everywhere)',
+    group: 'Terminal — move the cursor',
     items: [
-      { term: 'Line editing', def: 'Works in zsh, bash, psql, node, python — anything readline.', cmd: '⌃A / ⌃E     start / end of line\n⌥← / ⌥→     move one word\n⌃W          delete previous word\n⌃U          clear the line\n⌃R          reverse history search\n⌃L          clear screen' },
+      { term: 'Jump', def: 'Works in zsh, bash, psql, node, python — anything using readline.', cmd: '⌃A          start of line\n⌃E          end of line\n⌥← / ⌥→     back / forward one word\n← / →       one character' },
+      { term: 'Delete', def: 'Stop holding backspace. ⌃W stops at spaces; ⌥⌫ also stops at / . -', cmd: '⌃W          delete word before cursor\n⌥⌫          delete word, stopping at punctuation\n⌥D          delete word AFTER cursor\n⌃U          delete everything before cursor\n⌃K          delete everything after cursor\n⌃T          swap the two characters at the cursor' },
+      { term: 'Undelete', def: 'The kill ring — separate from the ⌘C clipboard.', cmd: '⌃Y          paste back whatever you last killed' },
+      { term: 'Recall', def: 'Search beats scrolling once history is more than three deep.', cmd: '↑ / ↓       step through history\n⌃R          reverse search  (⌃R again = further back)\n⌃G          abort the search\n⌥.          insert last argument of previous command\n!!          the whole previous command  (sudo !!)\n!$          its last argument            (cd !$)' }
+    ]
+  },
+  {
+    group: 'Terminal — when things go wrong',
+    items: [
+      { term: 'Stop things', def: '⌃D at an empty prompt closes the window — that is why they vanish.', cmd: '⌃C          interrupt the running program\n⌃D          end of input (exits the shell if line is empty)\n⌃Z          suspend it       → fg to resume, bg for background\njobs        what have I suspended?' },
+      { term: 'Terminal looks frozen', def: 'Almost always ⌃S. Try this before closing anything.', cmd: '⌃Q          resume output  ← try this FIRST\n⌃C          interrupt\nstty -ixon  add to ~/.zshrc to disable ⌃S for good' },
+      { term: 'Too much output', def: 'Send it somewhere that waits for you.', cmd: 'cmd | less      page through it\ncmd | head      first 10 lines\ncmd | tail -20  last 20\ntail -f app.log follow live (⌃C to stop)\n\nin less:  space page  ·  b back  ·  /find  ·  n next  ·  q quit' },
+      { term: 'Clear the screen', def: '⌃L keeps your scrollback; ⌘K actually erases it.', cmd: '⌃L          scroll prompt to top (history kept)\n⌘K          clear screen AND scrollback (Ghostty)' }
+    ]
+  },
+  {
+    group: 'Terminal — quoting & patterns',
+    items: [
+      { term: 'Quoting', def: 'The shell splits on spaces before the command ever runs.', cmd: 'rm "My Notes.txt"    spaces need quotes\nrm My\\ Notes.txt     or a backslash\n"$HOME"              double quotes DO expand variables\n\'$HOME\'              single quotes expand nothing' },
+      { term: 'Globs', def: 'Expanded by the shell, not the command. Always <code>ls</code> before you <code>rm</code>.', cmd: '*.log            anything ending .log\nsrc/**/*.ts      any depth of folders\nfile?.txt        exactly one character\ncp cfg.json{,.bak}   brace expansion\nmkdir -p src/{api,web,shared}' },
       { term: 'Tools worth installing', def: 'Start with zoxide and fzf.', cmd: 'brew install starship fzf zoxide eza ripgrep bat jq atuin gh' }
     ]
   },

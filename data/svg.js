@@ -133,3 +133,25 @@ export const envLayers = wrap(540, 240,
   box(90, 176, 370, 40, AM, 'READ-ONLY — it can look, it cannot change') +
   txt(270, 232, 'each layer shrinks the blast radius. pick by what a mistake costs.', DIM, 10)
 );
+
+/* ---- terminal 101 ---- */
+
+export const terminalLayers = wrap(540, 250,
+  box(15, 18, 505, 54, MG, 'TERMINAL EMULATOR — Ghostty, iTerm2, Terminal.app',
+    'the window · fonts, colours, tabs, splits, copy & paste') +
+  line(270, 72, 270, 96, MG) +
+  box(60, 96, 420, 54, CY, 'SHELL — zsh, bash, fish',
+    'reads your line · history, tab completion, aliases') +
+  line(270, 150, 270, 174, CY) +
+  box(130, 174, 280, 46, LM, 'THE PROGRAM', 'git, npm, node, curl') +
+  txt(270, 240, '⌘C is the window.  ⌃C is the shell.  different keys, different layers.', AM, 11)
+);
+
+export const lineAnatomy = wrap(540, 165,
+  txt(14, 22, 'ONE LINE, THREE PLACES YOUR CURSOR CAN GO', DIM, 10, 'start') +
+  `<rect x="14" y="36" width="512" height="44" rx="10" fill="#04040b" stroke="${DIM}" stroke-width="1.5"/>` +
+  txt(30, 64, '$ git commit -m "fix teh bug"', '#cfd4f0', 13, 'start', 400) +
+  line(44, 88, 44, 104, LM) + txt(44, 120, '⌃A', LM, 11) + txt(44, 136, 'start', DIM, 9) +
+  line(250, 88, 250, 104, CY) + txt(250, 120, '⌥← ⌥→', CY, 11) + txt(250, 136, 'word', DIM, 9) +
+  line(455, 88, 455, 104, MG) + txt(455, 120, '⌃E', MG, 11) + txt(455, 136, 'end', DIM, 9)
+);

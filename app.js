@@ -99,6 +99,7 @@ NODE_INDEX.forEach(({ node, track, chapter }) => {
     if (s.t === 'lesson') return s.title + ' ' + stripTags(s.body.map(b =>
       b.p || b.h || (b.ul || []).join(' ') || (b.call ? b.call.t + ' ' + b.call.p : '') || '').join(' '));
     if (s.t === 'quiz') return stripTags(s.q + ' ' + s.choices.join(' ') + ' ' + s.why);
+    if (s.t === 'keys') return stripTags(s.goal + ' ' + s.line + ' ' + (s.keys || []).join(' ') + ' ' + s.reveal + ' ' + s.why);
     return stripTags(s.brief + ' ' + s.answer.join(' ') + ' ' + s.why);
   }).join(' ');
   SEARCH_INDEX.push({ kind: 'level', id: node.id, title: node.name, sub: track.name + ' · ' + chapter.title, ico: node.ico, text: (node.name + ' ' + text).toLowerCase(), raw: text });
@@ -219,14 +220,19 @@ function updCombo() {
   c.classList.toggle('hot', cur && cur.streak >= 3);
 }
 
+function releaseKeys() {
+  if (cur && cur.keyHandler) { document.removeEventListener('keydown', cur.keyHandler, true); cur.keyHandler = null; }
+}
+
 function renderStep() {
+  releaseKeys();
   const { steps, i } = cur;
   $('#play-progress').style.width = (i / steps.length * 100) + '%';
   const stage = $('#stage'); stage.innerHTML = '';
   if (i >= steps.length) return finishNode();
   const { step, key } = steps[i];
   cur.stepKey = key;
-  ({ lesson: stepLesson, quiz: stepQuiz, build: stepBuild })[step.t](stage, step);
+  ({ lesson: stepLesson, quiz: stepQuiz, build: stepBuild, keys: stepKeys })[step.t](stage, step);
   window.scrollTo(0, 0);
 }
 
@@ -278,22 +284,39 @@ function linkTerms(root) {
   const texts = []; let t;
   while ((t = walker.nextNode())) texts.push(t);
 
+  // Word boundaries only where the term actually starts/ends with a word
+  // character — otherwise `$PATH`, `~/.zshrc` and `.gitignore` never match.
+  const pattern = t => (/^\w/.test(t) ? '\\b' : '') + escRe(t) + (/\w$/.test(t) ? '\\b' : '');
+
   texts.forEach(textNode => {
-    let node = textNode;
+    const text = textNode.nodeValue;
+
+    // Collect every candidate first, then apply right-to-left. Scanning
+    // forwards and advancing past each hit silently drops any shorter term
+    // that sits earlier in the sentence — "zsh" always lost to "bash".
+    const found = [];
     for (const term of TERM_KEYS) {
       if (used.has(term)) continue;
-      const m = node.nodeValue.match(new RegExp('\\b' + escRe(term) + '\\b', 'i'));
-      if (!m) continue;
-      const rest = node.splitText(m.index);
-      rest.nodeValue = rest.nodeValue.slice(m[0].length);
+      const m = text.match(new RegExp(pattern(term), 'i'));
+      if (m) found.push({ term, start: m.index, end: m.index + m[0].length, hit: m[0] });
+    }
+    found.sort((a, b) => (b.end - b.start) - (a.end - a.start)); // longest wins an overlap
+    const kept = [];
+    for (const f of found) {
+      if (kept.some(k => f.start < k.end && k.start < f.end)) continue;
+      kept.push(f);
+      used.add(f.term);
+    }
+
+    kept.sort((a, b) => b.start - a.start).forEach(f => {
+      const rest = textNode.splitText(f.start);
+      rest.nodeValue = rest.nodeValue.slice(f.hit.length);
       const btn = el('button', 'term');
       btn.type = 'button';
-      btn.textContent = m[0];
-      btn.dataset.term = term;
+      btn.textContent = f.hit;
+      btn.dataset.term = f.term;
       rest.parentNode.insertBefore(btn, rest);
-      used.add(term);
-      node = rest;
-    }
+    });
   });
 }
 
@@ -313,6 +336,11 @@ function openSheet(termKey) {
   const cmd = $('#sheet-cmd');
   cmd.hidden = !it.cmd;
   if (it.cmd) cmd.textContent = it.cmd;
+  // App and tool entries can carry a homepage — shown here rather than inline
+  // in a lesson, so a definition never yanks you out of the level.
+  const link = $('#sheet-link');
+  link.hidden = !it.url;
+  if (it.url) { link.href = it.url; link.textContent = it.url.replace(/^https?:\/\//, '') + ' ↗'; }
   const s = $('#sheet');
   s.hidden = false;
   // Forcing a reflow gives the transition its start state synchronously.
@@ -497,6 +525,250 @@ function stepBuild(stage, s) {
 }
 
 function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+/* ============================================================
+   KEYS — the line simulator ("keystroke golf")
+   A real readline-ish model of the command line. Press the actual
+   chords on a desktop, tap the same chords on a phone; both drive
+   one state machine. Scored against par, so it measures speed
+   rather than recall.
+   ============================================================ */
+const ALNUM = /[A-Za-z0-9]/;
+
+/* Option on macOS emits a symbol (⌥d → "∂"), so fall back to the physical key. */
+function chordOf(e) {
+  const parts = [];
+  if (e.ctrlKey) parts.push('ctrl');
+  if (e.altKey) parts.push('alt');
+  if (e.metaKey) parts.push('meta');
+  let k = e.key;
+  if (e.altKey && /^Key[A-Z]$/.test(e.code)) k = e.code.slice(3);
+  else if (e.altKey && e.code === 'Period') k = '.';
+  parts.push(k.toLowerCase());
+  return parts.join('+');
+}
+
+const KEYMAP = {
+  'ctrl+a': 'home', 'ctrl+e': 'end',
+  'ctrl+b': 'left', 'ctrl+f': 'right',
+  'arrowleft': 'left', 'arrowright': 'right',
+  'alt+arrowleft': 'wordLeft', 'alt+arrowright': 'wordRight',
+  'alt+b': 'wordLeft', 'alt+f': 'wordRight',
+  'backspace': 'backspace', 'ctrl+h': 'backspace',
+  'ctrl+d': 'delChar',
+  'ctrl+w': 'killWordBack', 'alt+backspace': 'killWordAlnum', 'alt+d': 'killWordFwd',
+  'ctrl+u': 'killToStart', 'ctrl+k': 'killToEnd',
+  'ctrl+y': 'yank', 'ctrl+t': 'transpose',
+  'arrowup': 'histPrev', 'arrowdown': 'histNext',
+  'ctrl+r': 'searchStart', 'ctrl+g': 'abort', 'alt+.': 'lastArg'
+};
+
+/* Label → action, for the on-screen keypad (phones have no Ctrl key). */
+const KEYPAD = {
+  '⌃A': 'home', '⌃E': 'end', '⌃B': 'left', '⌃F': 'right',
+  '←': 'left', '→': 'right', '⌫': 'backspace', '⌃D': 'delChar',
+  '⌥←': 'wordLeft', '⌥→': 'wordRight',
+  '⌃W': 'killWordBack', '⌥⌫': 'killWordAlnum', '⌥D': 'killWordFwd',
+  '⌃U': 'killToStart', '⌃K': 'killToEnd',
+  '⌃Y': 'yank', '⌃T': 'transpose',
+  '↑': 'histPrev', '↓': 'histNext', '⌃R': 'searchStart', '⌃G': 'abort', '⌥.': 'lastArg'
+};
+
+function applyAction(st, act) {
+  const s = { ...st };
+  const L = s.line, c = s.cursor;
+
+  // ⌃W is whitespace-delimited (bash's unix-word-rubout); ⌥⌫ stops at any
+  // non-alphanumeric. That difference is the whole point of one of the levels.
+  const backTo = (from, alnumOnly) => {
+    let i = from;
+    if (alnumOnly) { while (i > 0 && !ALNUM.test(L[i - 1])) i--; while (i > 0 && ALNUM.test(L[i - 1])) i--; }
+    else { while (i > 0 && L[i - 1] === ' ') i--; while (i > 0 && L[i - 1] !== ' ') i--; }
+    return i;
+  };
+  const fwdTo = from => {
+    let i = from;
+    while (i < L.length && !ALNUM.test(L[i])) i++;
+    while (i < L.length && ALNUM.test(L[i])) i++;
+    return i;
+  };
+
+  switch (act) {
+    case 'home': s.cursor = 0; break;
+    case 'end': s.cursor = L.length; break;
+    case 'left': s.cursor = Math.max(0, c - 1); break;
+    case 'right': s.cursor = Math.min(L.length, c + 1); break;
+    case 'wordLeft': s.cursor = backTo(c, true); break;
+    case 'wordRight': s.cursor = fwdTo(c); break;
+    case 'backspace': if (c > 0) { s.line = L.slice(0, c - 1) + L.slice(c); s.cursor = c - 1; } break;
+    case 'delChar': if (c < L.length) s.line = L.slice(0, c) + L.slice(c + 1); break;
+    case 'killWordBack': case 'killWordAlnum': {
+      const i = backTo(c, act === 'killWordAlnum');
+      if (i === c) break;
+      s.kill = L.slice(i, c); s.line = L.slice(0, i) + L.slice(c); s.cursor = i; break;
+    }
+    case 'killWordFwd': { const j = fwdTo(c); if (j === c) break; s.kill = L.slice(c, j); s.line = L.slice(0, c) + L.slice(j); break; }
+    case 'killToStart': if (c) { s.kill = L.slice(0, c); s.line = L.slice(c); s.cursor = 0; } break;
+    case 'killToEnd': if (c < L.length) { s.kill = L.slice(c); s.line = L.slice(0, c); } break;
+    case 'yank': if (s.kill) { s.line = L.slice(0, c) + s.kill + L.slice(c); s.cursor = c + s.kill.length; } break;
+    case 'transpose': {
+      const i = Math.min(c, L.length - 1);
+      if (i > 0) { s.line = L.slice(0, i - 1) + L[i] + L[i - 1] + L.slice(i + 1); s.cursor = Math.min(L.length, i + 1); }
+      break;
+    }
+    case 'histPrev':
+      if (s.history.length) {
+        if (s.histIdx < 0) s.saved = L;
+        s.histIdx = Math.min(s.history.length - 1, s.histIdx + 1);
+        s.line = s.history[s.histIdx]; s.cursor = s.line.length;
+      }
+      break;
+    case 'histNext':
+      if (s.history.length && s.histIdx >= 0) {
+        s.histIdx--;
+        s.line = s.histIdx < 0 ? (s.saved || '') : s.history[s.histIdx];
+        s.cursor = s.line.length;
+      }
+      break;
+    case 'searchStart': s.mode = 'search'; s.search = ''; s.saved = L; break;
+    case 'abort':
+      if (s.mode === 'search') { s.mode = null; s.search = ''; s.line = s.saved || ''; s.cursor = s.line.length; }
+      break;
+    case 'lastArg': {
+      const h = s.history[0];
+      if (h) { const p = h.trim().split(/\s+/); const last = p[p.length - 1]; s.line = L.slice(0, c) + last + L.slice(c); s.cursor = c + last.length; }
+      break;
+    }
+  }
+  return s;
+}
+
+function searchMatch(st) {
+  if (!st.search) return st.saved || '';
+  return st.history.find(h => h.includes(st.search)) || st.line;
+}
+
+function stepKeys(stage, s) {
+  const card = el('div', 'card');
+  card.innerHTML = `<div class="kicker">Keystroke golf</div><h2>${s.goal}</h2>` +
+    (s.hint ? `<p class="build-hint">${s.hint}</p>` : '');
+
+  let st = {
+    line: s.line, cursor: s.cursor == null ? s.line.length : s.cursor,
+    kill: '', history: s.history || [], histIdx: -1, saved: '', mode: null, search: ''
+  };
+  const start = { ...st };
+  let presses = 0, done = false;
+
+  const sim = el('div', 'keysim');
+  const lineEl = el('div', 'ksline');
+  const meta = el('div', 'ksmeta');
+  const goalEl = el('div', 'kstarget');
+  const pad = el('div', 'keypad');
+  const tools = el('div', 'builder-tools');
+
+  // Trailing spaces are load-bearing here (⌃W leaves one behind) but invisible,
+  // so show them explicitly in the goal.
+  goalEl.innerHTML = `<span>you want</span><code>${
+    esc(s.target.line).replace(/ +$/, m => '␣'.repeat(m.length)) || '·empty line·'}</code>`;
+
+  function draw() {
+    const before = esc(st.line.slice(0, st.cursor));
+    const at = st.line[st.cursor];
+    const after = esc(st.line.slice(st.cursor + 1));
+    const prompt = st.mode === 'search'
+      ? `<span class="ksprompt search">(reverse-i-search)\`${esc(st.search)}':</span>`
+      : `<span class="ksprompt">$</span>`;
+    lineEl.innerHTML = prompt + `<span class="kstext">${before}<i class="kcur">${at ? esc(at) : '&nbsp;'}</i>${after}</span>`;
+    meta.innerHTML = `<span class="par">PAR ${s.par}</span>` +
+      `<span class="presses${presses > s.par ? ' over' : ''}">${presses} key${presses === 1 ? '' : 's'}</span>`;
+  }
+
+  function check() {
+    if (done) return;
+    const okLine = st.line === s.target.line;
+    const okCur = s.target.cursor == null || st.cursor === s.target.cursor;
+    if (!okLine || !okCur) return;
+    done = true;
+    detach();
+    lineEl.classList.add('ok');
+    const underPar = presses <= s.par;
+    const note = underPar
+      ? `<b class="par-hit">⛳️ Par ${s.par} — hit in ${presses}.</b> `
+      : `<b class="par-miss">${presses} keystrokes; par is ${s.par}.</b> `;
+    if (!underPar && presses > s.par + 4) recordMiss();
+    resolve(true, note + s.why, card, underPar ? 40 : 25);
+  }
+
+  function fire(act, isChar, ch) {
+    if (done) return;
+    presses++;
+    if (st.mode === 'search') {
+      if (act === 'abort') st = applyAction(st, 'abort');
+      else if (act === 'searchStart' || isChar) {
+        if (isChar) st = { ...st, search: st.search + ch };
+        st = { ...st, line: searchMatch(st) };
+        st.cursor = st.line.length;
+      } else if (act === 'backspace') {
+        st = { ...st, search: st.search.slice(0, -1) };
+        st = { ...st, line: searchMatch(st) };
+        st.cursor = st.line.length;
+      } else if (act === 'accept') { st = { ...st, mode: null, search: '' }; }
+      else st = applyAction(st, act);
+    } else if (isChar) {
+      st = { ...st, line: st.line.slice(0, st.cursor) + ch + st.line.slice(st.cursor), cursor: st.cursor + 1 };
+    } else if (act) {
+      st = applyAction(st, act);
+    } else { presses--; return; }
+    buzz(4);
+    draw();
+    check();
+  }
+
+  const onKey = e => {
+    if (done) return;
+    const chord = chordOf(e);
+    const act = KEYMAP[chord];
+    const isChar = !e.ctrlKey && !e.metaKey && !e.altKey && e.key.length === 1;
+    if (chord === 'enter' && st.mode === 'search') { e.preventDefault(); return fire('accept'); }
+    if (!act && !isChar) return;
+    e.preventDefault();
+    fire(act, isChar, e.key);
+  };
+  function detach() { document.removeEventListener('keydown', onKey, true); if (cur) cur.keyHandler = null; }
+  document.addEventListener('keydown', onKey, true);
+  cur.keyHandler = onKey;
+
+  // A label that is not a chord and is a single character becomes a letter key,
+  // so ⌃R search is solvable on a phone, which has no keyboard here.
+  (s.keys || Object.keys(KEYPAD)).forEach(label => {
+    const act = KEYPAD[label];
+    const isChar = !act && [...label].length === 1;
+    if (!act && !isChar) return;
+    const b = el('button', 'kbtn' + (isChar ? ' char' : ''), esc(label));
+    b.type = 'button';
+    b.onclick = () => fire(act, isChar, label);
+    pad.appendChild(b);
+  });
+
+  const reset = el('button', 'mini-btn', '↺ Reset line');
+  reset.onclick = () => { if (done) return; st = { ...start }; presses = 0; draw(); };
+  const showMe = el('button', 'mini-btn', '👀 Show me');
+  showMe.onclick = () => {
+    if (done) return;
+    if (!card.querySelector('.hint-note')) {
+      card.insertBefore(el('div', 'callout hint-note', `<b>The chord</b> ${s.reveal}`), sim);
+      recordMiss();
+    }
+  };
+  tools.append(reset, showMe);
+
+  sim.append(lineEl, meta);
+  card.append(sim, goalEl, pad, tools);
+  stage.appendChild(card);
+  stage.appendChild(el('div', 'cta'));
+  draw();
+}
 
 /* ---------- answer resolution + miss tracking ---------- */
 function recordMiss() {
@@ -774,6 +1046,7 @@ function openSync() {
 document.querySelectorAll('[data-back]').forEach(b => {
   b.onclick = () => {
     buzz(6);
+    releaseKeys();
     const to = b.dataset.back;
     if (to === 'levels' && curTrack && !cur?.review) openTrack(curTrack);
     else { renderHome(); show('home'); }
