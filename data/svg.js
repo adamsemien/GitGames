@@ -1,6 +1,6 @@
 /* Tiny SVG diagram kit — no deps, theme-aware via currentColor-ish literals. */
 
-const CY = '#39e6ff', MG = '#ff4fd8', LM = '#7cff7c', AM = '#ffc44d', VI = '#a07cff', DIM = '#8f93b5';
+const CY = '#39e6ff', MG = '#ff4fd8', LM = '#7cff7c', AM = '#ffc44d', VI = '#a07cff', DIM = '#8f93b5', RD = '#ff5c6e';
 
 const dot = (x, y, c, r = 13) =>
   `<circle cx="${x}" cy="${y}" r="${r}" fill="${c}" opacity=".18"/><circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="${c}" stroke-width="2"/>`;
@@ -154,4 +154,40 @@ export const lineAnatomy = wrap(540, 165,
   line(44, 88, 44, 104, LM) + txt(44, 120, '⌃A', LM, 11) + txt(44, 136, 'start', DIM, 9) +
   line(250, 88, 250, 104, CY) + txt(250, 120, '⌥← ⌥→', CY, 11) + txt(250, 136, 'word', DIM, 9) +
   line(455, 88, 455, 104, MG) + txt(455, 120, '⌃E', MG, 11) + txt(455, 136, 'end', DIM, 9)
+);
+
+/* ---- prove your ground ---- */
+
+export const threeNames = wrap(540, 215,
+  txt(270, 20, 'THREE INDEPENDENT LABELS — none of them checks the others', DIM, 10) +
+  box(15, 36, 160, 58, MG, 'WORKSPACE', '"san-antonio"') +
+  box(190, 36, 160, 58, AM, 'FOLDER', '~/code/nobc-os') +
+  box(365, 36, 160, 58, CY, 'BRANCH', 'event-render-bug') +
+  txt(95, 118, 'your tool named it', DIM, 9) +
+  txt(270, 118, 'where you are standing', DIM, 9) +
+  txt(445, 118, 'what git will push', DIM, 9) +
+  `<rect x="15" y="140" width="510" height="42" rx="10" fill="${LM}" fill-opacity=".10" stroke="${LM}" stroke-width="1.5"/>` +
+  txt(270, 166, 'git branch --show-current   ← the only one that is true', LM, 12) +
+  txt(270, 204, 'the prompt can say anything. it is decoration, not state.', AM, 11)
+);
+
+export const cwdResolves = wrap(540, 200,
+  txt(270, 20, 'THE SAME COMMAND, TWO PLACES YOU COULD BE STANDING', DIM, 10) +
+  box(15, 34, 240, 56, LM, '~/code/nobc-os', 'has .vercel/project.json') +
+  box(285, 34, 240, 56, RD, '~', 'has nothing') +
+  txt(135, 112, 'vercel env add KEY', LM, 11) + txt(405, 112, 'vercel env add KEY', RD, 11) +
+  txt(135, 134, '→ the right project', DIM, 10) +
+  txt(405, 134, '→ another project, or an error', DIM, 10) +
+  txt(270, 176, 'git · npm · vercel all resolve against "here", silently', AM, 11)
+);
+
+export const shipChain = wrap(540, 175,
+  dot(50, 58, CY, 13) + txt(50, 96, 'merged', DIM, 10) + txt(50, 112, 'PR says done', DIM, 9) +
+  line(64, 58, 155, 58) +
+  dot(170, 58, AM, 13) + txt(170, 96, 'merge SHA', DIM, 10) + txt(170, 112, 'which commit?', DIM, 9) +
+  line(184, 58, 275, 58) +
+  dot(290, 58, MG, 13) + txt(290, 96, 'built', DIM, 10) + txt(290, 112, 'from THAT SHA?', DIM, 9) +
+  line(304, 58, 395, 58) +
+  dot(410, 58, LM, 15) + txt(410, 96, 'live', LM, 10) + txt(410, 112, 'behaviour seen?', DIM, 9) +
+  txt(270, 152, 'four links. each needs its own evidence.', AM, 11)
 );
