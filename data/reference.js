@@ -165,6 +165,21 @@ export const GLOSSARY = [
     ]
   },
   {
+    group: 'Proving your ground',
+    items: [
+      { term: 'Working directory', also: ['current directory', 'cwd'], def: 'The folder your terminal is standing in. <code>git</code>, <code>npm</code> and <code>vercel</code> all resolve against it silently — and walk <em>up</em> the tree if they find nothing here, which is how a command in the wrong folder still does something.', cmd: 'pwd' },
+      { term: '--show-current', def: 'The flag that prints your branch and nothing else. The only trustworthy answer to "what branch am I on" — the prompt is a rendering, the workspace name is metadata.', cmd: 'git branch --show-current' },
+      { term: 'No-op', def: 'A command that ran successfully and changed nothing. "Already up to date." and "Everything up-to-date" are the two that most often get read as success.' },
+      { term: 'Exit code', also: ['$?'], def: 'The number a command returns: 0 success, anything else failure. After a pipe it belongs to the <em>last</em> stage only, unless pipefail is set.', cmd: 'echo $?' },
+      { term: 'pipefail', def: 'A shell option making a pipeline report failure if <em>any</em> stage failed, not just the last. Without it, <code>npm run build | tail</code> reports tail\'s success and hides the broken build.', cmd: 'set -o pipefail' },
+      { term: 'Command chain', also: ['&&'], def: '<code>a && b</code> runs b only if a succeeded — so a mid-chain failure silently skips everything after it. <code>||</code> runs on failure; <code>;</code> runs regardless.' },
+      { term: 'Merge SHA', def: 'The commit created when a pull request merges. The link between "the PR is merged" and "the deployment built the right code" — if your host deployed a different SHA, nothing else matters.' },
+      { term: 'Worktree prune', def: 'Drops git\'s records of worktrees whose folders no longer exist. Needed after a folder is deleted by hand, or purged from <code>/tmp</code> by macOS — until you prune, the branch stays locked.', cmd: 'git worktree prune' },
+      { term: 'Stranded commits', also: ['unpushed commits'], def: 'Commits that exist only on your machine. Committing protects you from your editor; only pushing protects you from your laptop.', cmd: 'git log --branches --not --remotes --oneline' },
+      { term: 'Module resolution', def: 'How Node finds a package: it looks in <code>node_modules</code> here, then walks up the folder tree. A worktree nested inside its parent repo can silently build against the parent\'s dependencies and false-pass.' }
+    ]
+  },
+  {
     group: 'Apps and tools',
     items: [
       { term: 'Ghostty', def: 'A fast, native terminal emulator for macOS and Linux. GPU-accelerated, sane defaults, one plain-text config file, and no plugin system by design.', url: 'https://ghostty.org' },
@@ -204,6 +219,20 @@ export const CHEATS = [
       { term: 'Preview your commit', def: 'Catches stray debug code before anyone sees it.', cmd: 'git diff --staged' },
       { term: 'New branch', def: 'Modern form of <code>checkout -b</code>.', cmd: 'git switch -c fix/navbar' },
       { term: 'First push of a branch', def: '<code>-u</code> sets tracking so plain push/pull work after.', cmd: 'git push -u origin fix/navbar' }
+    ]
+  },
+  {
+    group: 'Prove your ground — before you press enter',
+    items: [
+      { term: 'The three-command reflex', def: 'Before anything that pushes, merges, deploys or deletes.', cmd: 'pwd                        which repo\ngit branch --show-current   which branch\ngit log -1 --oneline        which commit' },
+      { term: 'Make it one word', def: 'Drop into <code>~/.zshrc</code>, then just type <code>where</code>.', cmd: 'where() {\n  echo "📁 $(pwd)"\n  echo "🌿 $(git branch --show-current 2>/dev/null || echo not-a-repo)"\n  echo "📌 $(git log -1 --oneline 2>/dev/null)"\n}' },
+      { term: 'Output that means NOTHING happened', def: 'Both are true statements about the branch you are on — neither mentions the branch you meant.', cmd: '"Already up to date."     merge did nothing\n"Everything up-to-date"   push did nothing\n\n→ confirm with: git log -1 --oneline origin/main' },
+      { term: 'Trust the exit code', def: 'Put <code>set -euo pipefail</code> at the top of any script that matters.', cmd: 'set -o pipefail          fail a pipe if ANY stage fails\necho $pipestatus         zsh: every stage\'s code\necho ${PIPESTATUS[@]}    bash: same\ncmd_a && cmd_b && echo "✅ all ran"' },
+      { term: 'Count lines safely', def: '<code>wc -l</code> counts newlines, so it undercounts output with no trailing newline.', cmd: 'grep -c \'\' file          counts lines properly\ngit rev-list --count HEAD  beats piping into wc' },
+      { term: 'Verify a claim yourself', def: 'Cheap to check, expensive to assume.', cmd: 'git rev-parse HEAD       the exact SHA\ngit status -sb           branch + tracking + dirty\ngit log -1 --oneline origin/main   what the remote has' },
+      { term: 'Worktree hygiene', def: 'Keep them beside the repo, never in <code>/tmp</code> — macOS purges it and the branch stays locked.', cmd: 'git worktree list        the map\ngit worktree prune       drop records for deleted folders\ngit worktree remove ../proj-done\ngit log --branches --not --remotes --oneline   what exists nowhere else' },
+      { term: 'After every worktree add', def: 'Git brings tracked files. node_modules and .env.local are gitignored and never follow.', cmd: 'git worktree add ../proj-feat feature\ncd ../proj-feat\ncp ../proj/.env.local .      # or vercel env pull\nnpm ci\nls node_modules              # must exist HERE' },
+      { term: 'Before calling it shipped', def: 'Four links, each with its own evidence.', cmd: '1  gh pr view 42 --json state,mergeCommit\n2  git fetch && git log -1 --oneline origin/main\n3  deployment built THAT SHA?\n4  open it and use the feature' }
     ]
   },
   {

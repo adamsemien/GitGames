@@ -16,6 +16,7 @@
    Node ids must be unique across ALL tracks — they key saved progress.
    ============================================================ */
 import { terminal } from './terminal.js';
+import { ground } from './ground.js';
 import { github } from './github.js';
 import { claudeCode } from './claude-code.js';
 import { ghostty } from './ghostty.js';
@@ -25,4 +26,4 @@ import { apis } from './apis.js';
 import { tooling } from './tooling.js';
 import { harness } from './harness.js';
 
-export const TRACKS = [terminal, github, apis, tooling, harness, claudeCode, codex, ghostty, vibe];
+export const TRACKS = [terminal, github, ground, apis, tooling, harness, claudeCode, codex, ghostty, vibe];
