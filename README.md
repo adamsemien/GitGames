@@ -4,7 +4,7 @@ A neon arcade that teaches you Git, GitHub, and the AI-coding stack — built to
 
 **Play it → https://adamsemien.github.io/GitGames/**
 
-Build real commands by **tapping tokens or typing them** — the two are interchangeable, so it works one-handed on a phone and full-speed on a desktop. Every concept comes with a diagram, a check, and a reason.
+Build real commands by **tapping tokens or typing them** — the two are interchangeable, so it works one-handed on a phone and full-speed on a desktop. Every concept comes with a diagram, a check, and a reason. Know a chunk already? **Test out** of any level or whole section and clear it without sitting through the lessons.
 
 ---
 
@@ -30,6 +30,8 @@ Ghostty content is verified against Ghostty 1.3.1 defaults (`ghostty +show-confi
 - **Lesson** — the concept, with SVG diagrams and terminal output. Any glossary term is auto-linked; tap it for a definition without losing your place.
 - **Build** — assemble a real command. Tap the tokens, or type it: `Space` commits a token, `Tab` autocompletes, `Enter` runs. Mix both freely. Wrong answers shake, then hint, then reveal.
 - **Quiz** — a check with an explanation of *why*, not just *what*
+
+- **Test out** — already know it? Skip the lessons and prove it. Every section header has a **⚡ Test out** button, and any lesson offers the same for its own level until you answer the first check. You get that level's or that section's checks with the lessons stripped out and *one attempt per question* — no hints, no retries. Clear the pass mark — 80% of the questions, rounded up, so a short test has to be perfect — and every level it covered clears at once; fail and you lose nothing but the shortcut — the misses land in Review and you play that one through. Keystroke levels are muscle memory rather than knowledge, so no question comes from them — passing the section still marks them off, and they are still there to play.
 
 **Review** tracks every question you get wrong and serves them back later, mixed with checks from levels you cleared a while ago — two minutes, no lessons. **Search** covers every lesson, quiz and glossary term. **Move progress** exports a code you paste on another device.
 
