@@ -13,7 +13,7 @@ const KEY = 'gitgames.v3';
 const OLD_KEY = 'gitgames.v2';
 const state = load();
 
-function blank() { return { xp: 0, bestStreak: 0, done: {}, misses: {}, lastSeen: {} }; }
+function blank() { return { xp: 0, bestStreak: 0, done: {}, misses: {}, lastSeen: {}, outFail: {} }; }
 
 function load() {
   try {
@@ -78,6 +78,19 @@ function confetti() {
 const nodesOf = tr => tr.chapters.flatMap(c => c.nodes);
 const doneCount = tr => nodesOf(tr).filter(n => state.done[n.id]).length;
 const trackXp = tr => nodesOf(tr).reduce((a, n) => a + (state.done[n.id]?.xp || 0), 0);
+
+/* Test-out uses only the one-shot question types. `keys` steps have no fail
+   state — you press until the line matches — so they cannot score a test. */
+const EXAM_TYPES = new Set(['quiz', 'build']);
+const examStepsOf = node => node.steps
+  .map((step, i) => ({ step, key: node.id + '#' + i }))
+  .filter(x => EXAM_TYPES.has(x.step.t));
+const canTestOut = node => examStepsOf(node).length >= 1;
+const testOutXp = node => Math.max(25, examStepsOf(node).length * 25);
+const passMark = total => Math.max(1, Math.ceil(total * 0.8));
+/* A test-out attempt is itself one-shot. Without this, a level whose check is
+   a single multiple-choice question could be guessed open on the third try. */
+const examLocked = key => !!(state.outFail || {})[key];
 
 const NODE_INDEX = new Map(); // nodeId -> {node, track, chapter}
 TRACKS.forEach(track => track.chapters.forEach(chapter => chapter.nodes.forEach(node => {
@@ -162,18 +175,29 @@ function openTrack(tr) {
   let idx = 0;
   const firstUndone = all.find(n => !state.done[n.id]);
 
-  tr.chapters.forEach(ch => {
+  tr.chapters.forEach((ch, ci) => {
     const c = el('section', 'chapter');
-    c.appendChild(el('h3', '', esc(ch.title)));
+    const head = el('div', 'ch-head');
+    head.appendChild(el('h3', '', esc(ch.title)));
+    if (!ch.nodes.every(n => state.done[n.id]) && !examLocked('s:' + tr.id + ':' + ci) &&
+        chapterExamSteps(ch).length >= 3) {
+      const t = el('button', 'testout-btn', '⚡ Test out');
+      t.title = 'Skip the lessons — pass the section\'s checks instead';
+      t.onclick = e => { e.stopPropagation(); buzz(8); examIntro(chapterExam(tr, ch, ci)); };
+      head.appendChild(t);
+    }
+    c.appendChild(head);
     if (ch.desc) c.appendChild(el('p', 'ch-desc', esc(ch.desc)));
     const grid = el('div', 'node-grid');
     ch.nodes.forEach(n => {
       idx++;
       const isDone = !!state.done[n.id];
+      const testedOut = isDone && state.done[n.id].out;
       const isNext = firstUndone && n.id === firstUndone.id;
-      const b = el('button', 'node' + (isDone ? ' done' : '') + (isNext ? ' next' : ''));
+      const b = el('button', 'node' + (isDone ? ' done' : '') + (testedOut ? ' out' : '') + (isNext ? ' next' : ''));
+      if (testedOut) b.title = 'Tested out — cleared without the lessons';
       b.innerHTML = `<span class="n-num">${String(idx).padStart(2, '0')}</span>
-        <span class="n-ico">${isDone ? '✓' : n.ico}</span>
+        <span class="n-ico">${isDone ? (testedOut ? '⚡' : '✓') : n.ico}</span>
         <span class="n-lbl">${esc(n.name)}</span>`;
       b.onclick = () => { buzz(8); playNode(tr, n); };
       grid.appendChild(b);
@@ -212,6 +236,89 @@ function playReview() {
   startPlay();
 }
 
+/* ============================================================
+   TEST OUT
+   Prove you already know it. A test is the checks with the lessons
+   stripped out and one attempt per question — pass and the level (or the
+   whole section) clears; fail and nothing is lost, the misses just land
+   on the Review pile.
+   ============================================================ */
+
+/* Two questions per level, levels in order, capped so a long section is
+   still a test and not a marathon. */
+function chapterExamSteps(ch) {
+  const per = ch.nodes.map(n => shuffle(examStepsOf(n)));
+  const picked = [];
+  const CAP = 14;
+  for (let round = 0; round < 2; round++)
+    per.forEach((list, ni) => { if (list[round] && picked.length < CAP) picked.push({ ni, round, q: list[round] }); });
+  picked.sort((a, b) => a.ni - b.ni || a.round - b.round);
+  return picked.map(x => x.q);
+}
+
+const nodeExam = (tr, node) => ({
+  kind: 'level', key: 'n:' + node.id, track: tr, nodes: [node],
+  steps: shuffle(examStepsOf(node)), title: node.name, where: tr.name
+});
+/* Keystroke levels have nothing a test can score, so they are not covered by
+   a section test — those you play. */
+const chapterExam = (tr, ch, ci) => ({
+  kind: 'section', key: 's:' + tr.id + ':' + ci, track: tr, nodes: ch.nodes.filter(n => examStepsOf(n).length),
+  skipped: ch.nodes.filter(n => !examStepsOf(n).length).length,
+  steps: chapterExamSteps(ch), title: ch.title, where: tr.name
+});
+
+function examIntro(cfg) {
+  releaseKeys();
+  cur = null;
+  curTrack = cfg.track;
+  const total = cfg.steps.length, need = passMark(total);
+  const section = cfg.kind === 'section';
+  $('#play-title').textContent = 'Test out';
+  $('#play-sub').textContent = cfg.where;
+  $('#play-progress').style.width = '0%';
+  $('#combo').querySelector('b').textContent = '0';
+  $('#combo').classList.remove('hot');
+
+  const stage = $('#stage'); stage.innerHTML = '';
+  const card = el('div', 'card');
+  card.innerHTML = `<div class="kicker">Test out of this ${section ? 'section' : 'level'}</div>
+    <h2>${esc(cfg.title)}</h2>
+    <p>Already know this? Skip the lessons and prove it. ${section
+      ? `Pass and all <b>${cfg.nodes.length}</b> levels in the section clear at once.`
+      : 'Pass and the level clears.'}</p>
+    <div class="exam-facts">
+      <div><b>${total}</b><span>Question${total === 1 ? '' : 's'}</span></div>
+      <div><b>${need}</b><span>To pass</span></div>
+      <div><b>1</b><span>Attempt</span></div>
+    </div>
+    <div class="callout warn"><b>One shot, all the way down.</b> No lessons, no hints, one try per question — and one try at the test. Miss the mark and this ${section ? 'section' : 'level'} is yours to play through.</div>
+    <div class="callout tip"><b>Nothing to lose.</b> Fail and you keep your XP and your progress. Every question you miss goes onto the Review pile, and the lessons are still there.</div>` +
+    (cfg.skipped ? `<div class="callout"><b>${cfg.skipped} keystroke level${cfg.skipped === 1 ? '' : 's'}</b> in this section stay${cfg.skipped === 1 ? 's' : ''} unlocked either way — muscle memory is not something a quiz can check.</div>` : '');
+  stage.appendChild(card);
+
+  const cta = el('div', 'cta');
+  const go = el('button', 'btn', 'Start the test →');
+  go.onclick = () => { buzz(8); startExam(cfg); };
+  const no = el('button', 'btn sec', section ? 'Back to the level map' : 'Take the lessons instead');
+  no.style.marginTop = '10px';
+  no.onclick = () => { buzz(6); section ? openTrack(cfg.track) : playNode(cfg.track, cfg.nodes[0]); };
+  cta.append(go, no);
+  stage.appendChild(cta);
+  show('play');
+}
+
+function startExam(cfg) {
+  const total = cfg.steps.length;
+  cur = {
+    track: cfg.track, node: cfg.kind === 'level' ? cfg.nodes[0] : null, review: false,
+    exam: { kind: cfg.kind, key: cfg.key, track: cfg.track, nodes: cfg.nodes, title: cfg.title, where: cfg.where, total, need: passMark(total) },
+    steps: cfg.steps, i: 0, xp: 0, streak: 0, misses: 0, right: 0
+  };
+  $('#play-title').textContent = 'Test out · ' + cfg.title;
+  startPlay();
+}
+
 function startPlay() { updCombo(); show('play'); renderStep(); }
 
 function updCombo() {
@@ -230,6 +337,8 @@ function renderStep() {
   $('#play-progress').style.width = (i / steps.length * 100) + '%';
   const stage = $('#stage'); stage.innerHTML = '';
   if (i >= steps.length) return finishNode();
+  if (cur.exam) $('#play-sub').textContent =
+    `${cur.right} right · ${cur.exam.need} of ${cur.exam.total} to pass`;
   const { step, key } = steps[i];
   cur.stepKey = key;
   ({ lesson: stepLesson, quiz: stepQuiz, build: stepBuild, keys: stepKeys })[step.t](stage, step);
@@ -260,6 +369,16 @@ function stepLesson(stage, s) {
   const b = el('button', 'btn', s.cta || 'Got it →');
   b.onclick = () => { buzz(6); nextStep(10); };
   cta.appendChild(b);
+  // Offered while the level is still all lesson so far — once you have
+  // answered a check, testing out of it is no longer skipping anything.
+  if (cur && cur.node && !cur.review && !cur.exam && !state.done[cur.node.id] &&
+      canTestOut(cur.node) && !examLocked('n:' + cur.node.id) &&
+      cur.steps.slice(0, cur.i).every(x => x.step.t === 'lesson')) {
+    const t = el('button', 'btn sec', '⚡ Know this already? Test out');
+    t.style.marginTop = '10px';
+    t.onclick = () => { buzz(8); examIntro(nodeExam(cur.track, cur.node)); };
+    cta.appendChild(t);
+  }
   stage.appendChild(cta);
 }
 
@@ -490,6 +609,12 @@ function stepBuild(stage, s) {
     if (!right) {
       line.classList.add('bad'); buzz([30, 40, 30]);
       setTimeout(() => line.classList.remove('bad'), 400);
+      if (cur.exam) {                       // one shot — no hint, no retry
+        answered = true;
+        drawLine();
+        resolve(false, `<b>It was <code>${esc(s.answer.join(' '))}</code>.</b> ` + s.why, card, 0);
+        return;
+      }
       cur.streak = 0; updCombo();
       cur.misses++;
       recordMiss();
@@ -787,6 +912,7 @@ function clearMiss() {
 
 function resolve(right, why, card, gain) {
   if (right) {
+    cur.right = (cur.right || 0) + 1;
     cur.streak++;
     if (cur.streak > state.bestStreak) state.bestStreak = cur.streak;
     clearMiss();
@@ -798,10 +924,13 @@ function resolve(right, why, card, gain) {
   updCombo();
 
   const bonus = right && cur.streak >= 3 ? 10 : 0;
+  // A test pays out once, at the end, so per-question XP is not shown.
+  const label = !right ? '✗ Not quite'
+    : cur.exam ? `✓ Correct — ${cur.right} of ${cur.exam.total}`
+    : cur.streak >= 3 ? `🔥 ${cur.streak} in a row! +${gain + bonus} XP`
+    : `✓ Correct  +${gain} XP`;
   const fb = el('div', 'feedback ' + (right ? 'good' : 'bad'));
-  fb.innerHTML = `<b>${right
-    ? (cur.streak >= 3 ? `🔥 ${cur.streak} in a row! +${gain + bonus} XP` : `✓ Correct  +${gain} XP`)
-    : '✗ Not quite'}</b>${why}`;
+  fb.innerHTML = `<b>${label}</b>${why}`;
   card.appendChild(fb);
   linkTerms(fb);
   fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -820,6 +949,8 @@ function finishNode() {
   const stage = $('#stage');
   $('#play-progress').style.width = '100%';
   stage.innerHTML = '';
+
+  if (cur.exam) return finishExam();
 
   if (cur.review) {
     const left = reviewPool().length;
@@ -882,6 +1013,72 @@ function finishNode() {
 
   if (fresh) { confetti(); buzz([15, 50, 15]); }
   if (trackDone) toast('👑 ' + track.name + ' mastered');
+  renderHome();
+}
+
+/* ---------- finish: a test-out attempt ---------- */
+function finishExam() {
+  const stage = $('#stage');
+  const ex = cur.exam, track = ex.track;
+  const passed = cur.right >= ex.need;
+  $('#play-sub').textContent = ex.where;
+
+  let cleared = 0, gained = 0;
+  if (passed) {
+    ex.nodes.forEach(n => {
+      const prev = state.done[n.id]?.xp || 0;
+      const award = Math.max(prev, testOutXp(n));
+      if (!state.done[n.id]) cleared++;
+      gained += award - prev;
+      const wasOut = state.done[n.id] ? !!state.done[n.id].out : true;  // a level already earned the hard way keeps its ✓
+      state.done[n.id] = { xp: award, out: wasOut };
+      state.lastSeen[n.id] = Date.now();
+    });
+    state.xp += gained;
+    save();
+  } else {
+    (state.outFail || (state.outFail = {}))[ex.key] = Date.now();
+    save();
+  }
+
+  const total = nodesOf(track).length, dn = doneCount(track);
+  const c = el('div', 'complete');
+  c.innerHTML = passed ? `
+    <div class="big">🎓</div>
+    <h2>Tested out</h2>
+    <p>${cur.right} of ${ex.total}. ${cleared
+      ? `<b>${cleared}</b> level${cleared === 1 ? '' : 's'} cleared without sitting through a single lesson.`
+      : 'Nothing new to clear — but the recall is solid.'}</p>
+    <div class="score-grid">
+      <div><b>${cur.right}/${ex.total}</b><span>Score</span></div>
+      <div><b>+${gained}</b><span>XP gained</span></div>
+      <div><b>${dn}/${total}</b><span>Track</span></div>
+    </div>
+    <p class="exam-note">Tested-out levels still come back in Review — that is how you find out whether you really knew it.</p>` : `
+    <div class="big">📚</div>
+    <h2>Not this time</h2>
+    <p>${cur.right} of ${ex.total}, and you needed ${ex.need}. Nothing lost: no XP spent, nothing cleared, and every question you missed is on the Review pile. The shortcut past this ${ex.kind} is closed now — play it through.</p>
+    <div class="score-grid">
+      <div><b>${cur.right}/${ex.total}</b><span>Score</span></div>
+      <div><b>${ex.need}</b><span>Needed</span></div>
+      <div><b>${ex.total - cur.right}</b><span>Missed</span></div>
+    </div>`;
+
+  const nextNode = passed
+    ? nodesOf(track).find(n => !state.done[n.id])
+    : (ex.nodes.find(n => !state.done[n.id]) || ex.nodes[0]);
+  const b1 = el('button', 'btn', passed
+    ? (nextNode ? `Next: ${esc(nextNode.name)} →` : 'Back to tracks')
+    : 'Start the lessons →');
+  b1.onclick = () => { buzz(8); nextNode ? playNode(track, nextNode) : (renderHome(), show('home')); };
+  const b2 = el('button', 'btn sec', 'Level map');
+  b2.style.marginTop = '10px';
+  b2.onclick = () => { buzz(6); openTrack(track); };
+  c.append(b1, b2);
+  stage.appendChild(c);
+
+  if (passed) { confetti(); buzz([15, 50, 15]); }
+  if (passed && dn === total) toast('👑 ' + track.name + ' mastered');
   renderHome();
 }
 
@@ -986,7 +1183,7 @@ function openSync() {
   $('#reader-sub').textContent = 'Phone ⇄ desktop, no account needed';
   const body = $('#reader-body'); body.innerHTML = '';
 
-  const payload = { v: 3, x: state.xp, s: state.bestStreak, d: state.done, m: state.misses, l: state.lastSeen };
+  const payload = { v: 3, x: state.xp, s: state.bestStreak, d: state.done, m: state.misses, l: state.lastSeen, o: state.outFail };
   let code = '';
   try { code = btoa(unescape(encodeURIComponent(JSON.stringify(payload)))); } catch (_) {}
 
@@ -1019,13 +1216,17 @@ function openSync() {
       if (!NODE_INDEX.has(id)) return;                       // ignore levels this build does not have
       const mine = state.done[id];
       const theirXp = Math.max(0, Math.min(500, +rec?.xp || 0));
-      if (!mine || theirXp > mine.xp) state.done[id] = { xp: theirXp };
+      if (!mine || theirXp > mine.xp) state.done[id] = { xp: theirXp, out: !!rec?.out };
     });
     Object.entries(data.m || {}).forEach(([k, m]) => {
       if (NODE_INDEX.has(String(k).split('#')[0]) && !state.misses[k]) state.misses[k] = m;
     });
     Object.entries(data.l || {}).forEach(([id, ts]) => {
       if (NODE_INDEX.has(id)) state.lastSeen[id] = Math.max(state.lastSeen[id] || 0, +ts || 0);
+    });
+    Object.entries(data.o || {}).forEach(([k, ts]) => {
+      if (!state.outFail) state.outFail = {};
+      state.outFail[k] = Math.max(state.outFail[k] || 0, +ts || 0);
     });
     state.bestStreak = Math.max(state.bestStreak, +data.s || 0);
     state.xp = Object.values(state.done).reduce((a, r) => a + (r.xp || 0), 0);
