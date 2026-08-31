@@ -308,6 +308,10 @@ p code,li code{background:rgba(57,230,255,.11);border:1px solid rgba(57,230,255,
   transition:transform var(--dur-fast) var(--ease-out),box-shadow var(--dur-fast),border-color var(--dur-fast)}
 .testout-btn:hover{border-color:var(--violet);box-shadow:0 0 18px rgba(160,124,255,.34)}
 .testout-btn:active{transform:scale(.94)}
+.ch-flag{flex:none;font-size:10px;font-weight:850;letter-spacing:1.1px;text-transform:uppercase;
+  color:var(--lime);background:rgba(124,255,124,.09);border:1px solid rgba(124,255,124,.36);
+  border-radius:999px;padding:7px 11px;white-space:nowrap}
+.ch-flag.out{color:var(--violet);background:rgba(160,124,255,.10);border-color:rgba(160,124,255,.42)}
 .node.done.out{border-color:rgba(160,124,255,.45);background:rgba(160,124,255,.08);box-shadow:inset 0 1px 0 var(--panel-hi),0 0 18px rgba(160,124,255,.22)}
 .node.done.out .n-lbl{color:var(--violet)}
 .exam-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}

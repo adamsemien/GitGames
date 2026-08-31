@@ -13,7 +13,7 @@ const KEY = 'gitgames.v3';
 const OLD_KEY = 'gitgames.v2';
 const state = load();
 
-function blank() { return { xp: 0, bestStreak: 0, done: {}, misses: {}, lastSeen: {}, outFail: {} }; }
+function blank() { return { xp: 0, bestStreak: 0, done: {}, misses: {}, lastSeen: {}, outUsed: {} }; }
 
 function load() {
   try {
@@ -89,8 +89,11 @@ const canTestOut = node => examStepsOf(node).length >= 1;
 const testOutXp = node => Math.max(25, examStepsOf(node).length * 25);
 const passMark = total => Math.max(1, Math.ceil(total * 0.8));
 /* A test-out attempt is itself one-shot. Without this, a level whose check is
-   a single multiple-choice question could be guessed open on the third try. */
-const examLocked = key => !!(state.outFail || {})[key];
+   a single multiple-choice question could be guessed open on the third try.
+   The attempt is spent when the test STARTS — banking it on the result instead
+   would let you peek at question one, back out, and come again clean. */
+const examLocked = key => !!(state.outUsed || {})[key];
+const spendAttempt = key => { (state.outUsed || (state.outUsed = {}))[key] = Date.now(); save(); };
 
 const NODE_INDEX = new Map(); // nodeId -> {node, track, chapter}
 TRACKS.forEach(track => track.chapters.forEach(chapter => chapter.nodes.forEach(node => {
@@ -179,7 +182,12 @@ function openTrack(tr) {
     const c = el('section', 'chapter');
     const head = el('div', 'ch-head');
     head.appendChild(el('h3', '', esc(ch.title)));
-    if (!ch.nodes.every(n => state.done[n.id]) && !examLocked('s:' + tr.id + ':' + ci) &&
+    const chDone = ch.nodes.every(n => state.done[n.id]);
+    if (chDone) {
+      const anyOut = ch.nodes.some(n => state.done[n.id].out);
+      head.appendChild(el('span', 'ch-flag' + (anyOut ? ' out' : ''), anyOut ? '⚡ Tested out' : '✓ Cleared'));
+    }
+    if (!chDone && !examLocked('s:' + tr.id + ':' + ci) &&
         chapterExamSteps(ch).length >= 3) {
       const t = el('button', 'testout-btn', '⚡ Test out');
       t.title = 'Skip the lessons — pass the section\'s checks instead';
@@ -240,8 +248,9 @@ function playReview() {
    TEST OUT
    Prove you already know it. A test is the checks with the lessons
    stripped out and one attempt per question — pass and the level (or the
-   whole section) clears; fail and nothing is lost, the misses just land
-   on the Review pile.
+   whole section) marks off; fail and the only thing spent is the attempt,
+   and the misses land on the Review pile. Nothing already cleared is ever
+   downgraded: an award is Math.max(what you had, what the test is worth).
    ============================================================ */
 
 /* Two questions per level, levels in order, capped so a long section is
@@ -260,11 +269,12 @@ const nodeExam = (tr, node) => ({
   kind: 'level', key: 'n:' + node.id, track: tr, nodes: [node],
   steps: shuffle(examStepsOf(node)), title: node.name, where: tr.name
 });
-/* Keystroke levels have nothing a test can score, so they are not covered by
-   a section test — those you play. */
+/* Keystroke levels cannot be scored — you press until the line matches — so no
+   question comes from them, but passing the section still clears them: a
+   section you tested out of has to actually mark off. They stay replayable. */
 const chapterExam = (tr, ch, ci) => ({
-  kind: 'section', key: 's:' + tr.id + ':' + ci, track: tr, nodes: ch.nodes.filter(n => examStepsOf(n).length),
-  skipped: ch.nodes.filter(n => !examStepsOf(n).length).length,
+  kind: 'section', key: 's:' + tr.id + ':' + ci, track: tr, nodes: ch.nodes,
+  drills: ch.nodes.filter(n => !examStepsOf(n).length).length,
   steps: chapterExamSteps(ch), title: ch.title, where: tr.name
 });
 
@@ -292,9 +302,9 @@ function examIntro(cfg) {
       <div><b>${need}</b><span>To pass</span></div>
       <div><b>1</b><span>Attempt</span></div>
     </div>
-    <div class="callout warn"><b>One shot, all the way down.</b> No lessons, no hints, one try per question — and one try at the test. Miss the mark and this ${section ? 'section' : 'level'} is yours to play through.</div>
+    <div class="callout warn"><b>One shot, all the way down.</b> No lessons, no hints, one try per question — and one try at the test. Starting spends that try, walking out mid-test included. Miss the mark and this ${section ? 'section' : 'level'} is yours to play through.</div>
     <div class="callout tip"><b>Nothing to lose.</b> Fail and you keep your XP and your progress. Every question you miss goes onto the Review pile, and the lessons are still there.</div>` +
-    (cfg.skipped ? `<div class="callout"><b>${cfg.skipped} keystroke level${cfg.skipped === 1 ? '' : 's'}</b> in this section stay${cfg.skipped === 1 ? 's' : ''} unlocked either way — muscle memory is not something a quiz can check.</div>` : '');
+    (cfg.drills ? `<div class="callout"><b>${cfg.drills} keystroke level${cfg.drills === 1 ? '' : 's'}</b> here can't be quizzed — muscle memory is not something a question checks. Passing clears ${cfg.drills === 1 ? 'it' : 'them'} too, and ${cfg.drills === 1 ? 'it is' : 'they are'} still there to play.</div>` : '');
   stage.appendChild(card);
 
   const cta = el('div', 'cta');
@@ -316,6 +326,7 @@ function startExam(cfg) {
     steps: cfg.steps, i: 0, xp: 0, streak: 0, misses: 0, right: 0
   };
   $('#play-title').textContent = 'Test out · ' + cfg.title;
+  spendAttempt(cfg.key);
   startPlay();
 }
 
@@ -1036,9 +1047,6 @@ function finishExam() {
     });
     state.xp += gained;
     save();
-  } else {
-    (state.outFail || (state.outFail = {}))[ex.key] = Date.now();
-    save();
   }
 
   const total = nodesOf(track).length, dn = doneCount(track);
@@ -1183,7 +1191,7 @@ function openSync() {
   $('#reader-sub').textContent = 'Phone ⇄ desktop, no account needed';
   const body = $('#reader-body'); body.innerHTML = '';
 
-  const payload = { v: 3, x: state.xp, s: state.bestStreak, d: state.done, m: state.misses, l: state.lastSeen, o: state.outFail };
+  const payload = { v: 3, x: state.xp, s: state.bestStreak, d: state.done, m: state.misses, l: state.lastSeen, o: state.outUsed };
   let code = '';
   try { code = btoa(unescape(encodeURIComponent(JSON.stringify(payload)))); } catch (_) {}
 
@@ -1225,8 +1233,8 @@ function openSync() {
       if (NODE_INDEX.has(id)) state.lastSeen[id] = Math.max(state.lastSeen[id] || 0, +ts || 0);
     });
     Object.entries(data.o || {}).forEach(([k, ts]) => {
-      if (!state.outFail) state.outFail = {};
-      state.outFail[k] = Math.max(state.outFail[k] || 0, +ts || 0);
+      if (!state.outUsed) state.outUsed = {};
+      state.outUsed[k] = Math.max(state.outUsed[k] || 0, +ts || 0);
     });
     state.bestStreak = Math.max(state.bestStreak, +data.s || 0);
     state.xp = Object.values(state.done).reduce((a, r) => a + (r.xp || 0), 0);
