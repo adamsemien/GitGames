@@ -12,6 +12,7 @@ Build real commands by **tapping tokens or typing them** — the two are interch
 
 | Track | Levels | What it covers |
 |---|---|---|
+| 🌀 **Systems Thinking** | 12 | Start here. How to think before the tools: parts vs the whole, stocks and flows, delays, balancing and reinforcing loops, bounded rationality, fixes that fail, shifting the burden, the commons, leverage points, mental models - and your app as a system. Every level is a small game you play before anything is explained |
 | 🐙 **Git & GitHub** | 34 | Repos, the three areas, commits, HEAD, undo, reflog, branches, merges, conflicts, remotes, forks, PRs, merge strategies, Actions, rebase, interactive rebase, cherry-pick, stash, bisect, worktrees, tags, submodules |
 | 🌐 **APIs & Webhooks** | 13 | What an API is, HTTP verbs, status codes, headers, JSON, curl, API keys vs bearer tokens vs OAuth, rate limits and backoff, idempotency, webhooks as inversion of control, signature verification, the raw-body trap, local tunnelling |
 | 🔧 **Tooling** | 12 | Runtime vs package manager vs bundler, package.json, lockfiles, semver, linters/formatters/typecheckers, tests as a contract, what "build" does — plus the agent's own tools, permission modes and blast radius |
@@ -21,7 +22,7 @@ Build real commands by **tapping tokens or typing them** — the two are interch
 | 👻 **Terminal & Ghostty** | 12 | Terminal vs shell, splits and tabs, scrollback and search, command palette, the quick terminal, config anatomy, `macos-option-as-alt`, config auditing, shell tooling, workspace layout |
 | 🌊 **The Vibe Stack** | 12 | Spec-first, small commits, second-opinion review, secrets, environments, migrations, webhooks, preview deploys and rollback, debugging with agents, prompt injection, cost economics |
 
-**120 levels · 249 steps · 116 glossary terms · a full cheat sheet**
+**166 levels · 391 steps · 162 glossary terms · a full cheat sheet**
 
 Ghostty content is verified against Ghostty 1.3.1 defaults (`ghostty +show-config --default`).
 
@@ -30,6 +31,7 @@ Ghostty content is verified against Ghostty 1.3.1 defaults (`ghostty +show-confi
 - **Lesson** — the concept, with SVG diagrams and terminal output. Any glossary term is auto-linked; tap it for a definition without losing your place.
 - **Build** — assemble a real command. Tap the tokens, or type it: `Space` commits a token, `Tab` autocompletes, `Enter` runs. Mix both freely. Wrong answers shake, then hint, then reveal.
 - **Quiz** — a check with an explanation of *why*, not just *what*
+- **Simulate** - a small turn-based game you play *before* the idea is explained: a shower that answers two turns late, a bath with a clogging drain, a rumour you can only steer early. After the last turn you get two numbers, a debrief matched to how you did, and a "same shape, different room" question. Review brings back only that question, never the game
 
 - **Test out** — already know it? Skip the lessons and prove it. Every section header has a **⚡ Test out** button, and any lesson offers the same for its own level until you answer the first check. You get that level's or that section's checks with the lessons stripped out and *one attempt per question* — no hints, no retries. Clear the pass mark — 80% of the questions, rounded up, so a short test has to be perfect — and every level it covered clears at once; fail and you lose nothing but the shortcut — the misses land in Review and you play that one through. Keystroke levels are muscle memory rather than knowledge, so no question comes from them — passing the section still marks them off, and they are still there to play.
 
@@ -89,9 +91,19 @@ import { myTrack } from './my-track.js';
 export const TRACKS = [github, apis, tooling, harness, claudeCode, codex, ghostty, vibe, myTrack];
 ```
 
-That is the whole extension point — `app.js` never changes. Node `id`s must be unique across all tracks (they key the saved progress). For `build` steps, decoy `chips` are merged with the answer tokens and shuffled.
+That is the whole extension point — `app.js` never changes. For a `sim` step (a turn-based game with pure `init`/`step`/`view`/`score` functions), copy a level from `data/systems.js` - the shape is documented at the top of that file - and run the tests below. Node `id`s must be unique across all tracks (they key the saved progress). For `build` steps, decoy `chips` are merged with the answer tokens and shuffled.
 
 Adding a glossary entry to `data/reference.js` makes that term auto-link everywhere it appears in any lesson, including tracks added later. Use `also: [...]` for aliases.
+
+## Tests
+
+The Simulate games are pure functions, so they are tested by replaying fixed action lists and checking where each one lands:
+
+```bash
+node tests/sim.test.mjs
+```
+
+Or serve the repo and open `/tests/sim.html` in any browser - it runs the same checks.
 
 ## Layout
 
@@ -102,6 +114,7 @@ app.js          engine: state, routing, the three step types
 sw.js           offline cache (production only)
 data/
   tracks.js     registry — the one file you edit to add a track
+  systems.js    Systems Thinking (Simulate levels)
   github.js     Git & GitHub
   claude-code.js
   ghostty.js
@@ -112,6 +125,10 @@ data/
   harness.js
   reference.js  glossary (also powers auto-linking) + cheat sheet
   svg.js        diagram kit
+tests/
+  sim-cases.js  Simulate checks, shared by the two runners below
+  sim.test.mjs  node runner
+  sim.html      browser runner
 ```
 
 ## License

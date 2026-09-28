@@ -2,6 +2,7 @@
    GitGames — engine
    Tracks live in ./data/*.js and are registered in ./data/tracks.js
    Adding a track = add a file + one line in tracks.js. Nothing here changes.
+   Step types: lesson, quiz, build, keys, sim (a small turn-based game).
    ============================================================ */
 import { TRACKS } from './data/tracks.js';
 import { GLOSSARY, CHEATS } from './data/reference.js';
@@ -100,7 +101,9 @@ TRACKS.forEach(track => track.chapters.forEach(chapter => chapter.nodes.forEach(
   NODE_INDEX.set(node.id, { node, track, chapter });
 })));
 
-/* glossary lookup, longest term first so "pull request" wins over "pull" */
+/* glossary lookup, longest term first so "pull request" wins over "pull".
+   An entry with `track: 'id'` links only inside that track, so a word that is
+   ordinary English elsewhere ("flow", "delay") never lights up other lessons. */
 const TERMS = new Map();
 GLOSSARY.forEach(g => g.items.forEach(it => {
   TERMS.set(it.term.toLowerCase(), it);
@@ -116,6 +119,8 @@ NODE_INDEX.forEach(({ node, track, chapter }) => {
       b.p || b.h || (b.ul || []).join(' ') || (b.call ? b.call.t + ' ' + b.call.p : '') || '').join(' '));
     if (s.t === 'quiz') return stripTags(s.q + ' ' + s.choices.join(' ') + ' ' + s.why);
     if (s.t === 'keys') return stripTags(s.goal + ' ' + s.line + ' ' + (s.keys || []).join(' ') + ' ' + s.reveal + ' ' + s.why);
+    if (s.t === 'sim') return stripTags([s.title, s.brief, ...Object.values(s.debrief).flat(),
+      s.recognise.q, ...s.recognise.choices].join(' '));
     return stripTags(s.brief + ' ' + s.answer.join(' ') + ' ' + s.why);
   }).join(' ');
   SEARCH_INDEX.push({ kind: 'level', id: node.id, title: node.name, sub: track.name + ' · ' + chapter.title, ico: node.ico, text: (node.name + ' ' + text).toLowerCase(), raw: text });
@@ -158,6 +163,7 @@ function renderHome() {
       </div>
       <div class="tc-rail"><i style="width:${total ? (dn / total * 100) : 0}%"></i></div>`;
     card.onclick = () => { buzz(8); openTrack(tr); };
+    if (tr.lead) list.appendChild(el('p', 'track-lead', esc(tr.lead)));
     list.appendChild(card);
   });
 }
@@ -352,7 +358,9 @@ function renderStep() {
     `${cur.right} right · ${cur.exam.need} of ${cur.exam.total} to pass`;
   const { step, key } = steps[i];
   cur.stepKey = key;
-  ({ lesson: stepLesson, quiz: stepQuiz, build: stepBuild, keys: stepKeys })[step.t](stage, step);
+  // Review re-serves only a game's recognise question, never the game itself.
+  if (step.t === 'sim' && cur.review) stepRecognise(stage, step, true);
+  else ({ lesson: stepLesson, quiz: stepQuiz, build: stepBuild, keys: stepKeys, sim: stepSim })[step.t](stage, step);
   window.scrollTo(0, 0);
 }
 
@@ -396,10 +404,20 @@ function stepLesson(stage, s) {
 /* ---------- auto-linked vocabulary ----------
    Walks text nodes only, skipping code / terminal / diagram content, and
    links the FIRST occurrence of each glossary term per lesson. */
+function activeTrack() {
+  const nodeId = cur && cur.stepKey ? cur.stepKey.split('#')[0] : null;
+  return (nodeId && NODE_INDEX.get(nodeId)?.track) || cur?.track || null;
+}
+
 function linkTerms(root) {
   const used = new Set();
+  // A track with `terms: 'own'` links only its own words: in plain-English
+  // copy, "push" and "pipe" are not the git and shell terms.
+  const track = activeTrack();
+  const trackId = track ? track.id : null;
+  const ownOnly = track && track.terms === 'own';
   const SKIP_TAG = new Set(['CODE', 'PRE', 'A', 'BUTTON', 'SVG', 'TEXT', 'SCRIPT', 'STYLE']);
-  const SKIP_CLASS = ['termbox', 'diagram', 'gl-cmd'];
+  const SKIP_CLASS = ['termbox', 'diagram', 'gl-cmd', 'nolink'];
 
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
     acceptNode(n) {
@@ -427,6 +445,8 @@ function linkTerms(root) {
     const found = [];
     for (const term of TERM_KEYS) {
       if (used.has(term)) continue;
+      const scope = TERMS.get(term).track;
+      if (scope ? scope !== trackId : ownOnly) continue;
       const m = text.match(new RegExp(pattern(term), 'i'));
       if (m) found.push({ term, start: m.index, end: m.index + m[0].length, hit: m[0] });
     }
@@ -906,6 +926,177 @@ function stepKeys(stage, s) {
   draw();
 }
 
+/* ============================================================
+   SIM - a small turn-based game, played before anything is explained.
+   One renderer for every game. A level supplies data plus pure functions:
+     init() -> state               step(state, actionId) -> new state
+     actions: [{id,label}]  or  (state) => [{id,label}]
+     view(state) -> { value, label, pre?, unit?, tone, sub?, gauge?, board?, msg? }
+     score(history) -> { stats:[{label,value},{label,value}], band:'bad'|'mid'|'good' }
+     debrief: { bad:[p..], mid:[p..], good:[p..] }
+     recognise: { q, choices:[4], odd, right, wrong:[4] }
+   history is [{ action, label, before, after }], one entry per turn.
+   Every number the player sees is rounded here, not in the level.
+   over(state) -> true may end the game before the last turn (you arrived).
+   The level is complete when every turn is played AND recognise is answered
+   right. It pays like a quiz; Review re-serves only the recognise question.
+   ============================================================ */
+const SIM_TONES = new Set(['good', 'warn', 'bad', 'cool']);
+const fmtNum = n => Math.round(+n || 0).toLocaleString('en-US');
+const toneOf = v => SIM_TONES.has(v && v.tone) ? v.tone : 'warn';
+
+function stepSim(stage, s) {
+  let st, history, finished;
+  const card = el('div', 'card sim');
+  const cta = el('div', 'cta sim-cta');
+  stage.append(card, cta);
+
+  function start() {
+    st = s.init(); history = []; finished = false;
+    [...stage.querySelectorAll('.sim-after')].forEach(n => n.remove());
+    draw();
+  }
+
+  function readout(v) {
+    const tone = toneOf(v);
+    const g = v.gauge;
+    let gauge = '';
+    if (g) {
+      const pct = x => Math.max(0, Math.min(100, (x - g.min) / (g.max - g.min) * 100));
+      gauge = `<div class="sim-gauge" aria-hidden="true">
+        <i class="sim-zone" style="left:${pct(g.lo)}%;width:${pct(g.hi) - pct(g.lo)}%"></i>
+        <i class="sim-mark ${tone}" style="left:${pct(v.value)}%"></i>
+        <span class="sim-gl">${esc(g.minLabel || fmtNum(g.min))}</span>
+        <span class="sim-gr">${esc(g.maxLabel || fmtNum(g.max))}</span></div>`;
+    }
+    const board = v.board ? `<div class="sim-board" style="grid-template-columns:repeat(${v.board[0].length},1fr)">${
+      v.board.flat().map(c => `<span>${c}</span>`).join('')}</div>` : '';
+    return `<div class="sim-read ${tone}">
+        <b class="sim-num">${esc(v.pre || '')}${fmtNum(v.value)}${esc(v.unit || '')}</b>
+        <span class="sim-lbl">${esc(v.label)}</span>
+      </div>${gauge}${board}` +
+      (v.sub ? `<p class="sim-sub">${v.sub}</p>` : '') +
+      (v.msg ? `<div class="sim-msg">${v.msg}</div>` : '');
+  }
+
+  // The strip is the player's own record: one bar per turn, start included.
+  function strip() {
+    const pts = [{ v: s.view(s.init()), label: 'Start' }]
+      .concat(history.map((h, k) => ({ v: s.view(h.after), label: 'Turn ' + (k + 1) + ': ' + h.label })));
+    const g = pts[pts.length - 1].v.gauge;
+    const vals = pts.map(p => +p.v.value || 0);
+    const lo = g ? g.min : Math.min(0, ...vals);
+    const hi = g ? g.max : Math.max(1, ...vals);
+    const cols = pts.map((p, k) => {
+      const h = Math.max(6, Math.min(100, (vals[k] - lo) / ((hi - lo) || 1) * 100));
+      return `<div class="sim-col" title="${esc(stripTags(p.label))}"><em>${fmtNum(vals[k])}</em>` +
+        `<i class="${toneOf(p.v)}" style="height:${h}%"></i></div>`;
+    }).join('');
+    const empty = Array.from({ length: s.turns + 1 - pts.length }, () => '<div class="sim-col empty"><em>&nbsp;</em><i></i></div>').join('');
+    return `<div class="sim-strip" aria-label="Your turns so far">${cols}${empty}</div>`;
+  }
+
+  function draw() {
+    const v = s.view(st);
+    const turn = history.length;
+    card.innerHTML = `<div class="kicker">${finished ? 'Final reading' : `Turn ${turn + 1} of ${s.turns}`}</div>
+      <h2>${esc(s.title)}</h2>` +
+      (turn === 0 && s.brief ? `<p class="sim-brief">${s.brief}</p>` : '') +
+      readout(v) + strip();
+
+    cta.innerHTML = '';
+    if (finished) return;
+    const acts = typeof s.actions === 'function' ? s.actions(st) : s.actions;
+    const pad = el('div', 'sim-acts' + (acts.length > 3 ? ' two' : ''));
+    acts.forEach(a => {
+      const b = el('button', 'sim-act', esc(a.label));   // plain text: terms never link inside game buttons
+      b.type = 'button';
+      b.onclick = () => {
+        if (finished) return;
+        buzz(6);
+        const before = st;
+        st = s.step(st, a.id);
+        history.push({ action: a.id, label: a.label, before, after: st });
+        if (history.length >= s.turns || (s.over && s.over(st))) { finished = true; draw(); return end(); }
+        draw();
+      };
+      pad.appendChild(b);
+    });
+    cta.appendChild(pad);
+  }
+
+  function end() {
+    const sc = s.score(history);
+    const band = s.debrief[sc.band] ? sc.band : 'mid';
+    const res = el('div', 'card sim-after');
+    res.innerHTML = `<div class="kicker">How it went</div>
+      <div class="sim-stats">${sc.stats.slice(0, 2).map(x =>
+        `<div><b>${esc(x.pre || '')}${fmtNum(x.value)}${esc(x.unit || '')}</b><span>${esc(x.label)}</span></div>`).join('')}</div>
+      <div class="kicker">What just happened</div>
+      ${s.debrief[band].map(p => `<p>${p}</p>`).join('')}`;
+    linkTerms(res);
+    const again = el('button', 'mini-btn', '↺ Play the game again');
+    again.type = 'button';
+    again.onclick = () => { buzz(6); start(); window.scrollTo(0, 0); };
+    res.appendChild(again);
+    stage.insertBefore(res, cta);
+
+    const rec = el('div', 'sim-after');
+    stage.insertBefore(rec, cta);
+    stepRecognise(rec, s, false, () => again.remove());
+    res.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  start();
+}
+
+/* "Same shape, different room" - pick the one that is NOT the pattern.
+   Inside a level you can try again (a miss still goes on the Review pile);
+   in Review it is one shot, like any quiz. */
+function stepRecognise(stage, s, oneShot, onDone) {
+  const r = s.recognise;
+  const card = el('div', 'card');
+  card.innerHTML = `<div class="kicker">Same shape, different room</div><h2>${r.q}</h2>`;
+  const box = el('div', 'choices');
+  const letters = 'ABCD';
+  let missed = false, done = false, fb = null;
+
+  r.choices.forEach((txt, k) => {
+    const b = el('button', 'choice', `<span class="ltr">${letters[k]}</span><span>${txt}</span>`);
+    b.onclick = () => {
+      if (done || b.disabled) return;
+      const right = k === r.odd;
+      if (right || oneShot) {
+        done = true;
+        box.querySelectorAll('.choice').forEach((n, j) => {
+          n.disabled = true;
+          if (j === r.odd) n.classList.add(right ? 'right' : 'reveal');
+          if (j === k && !right) n.classList.add('wrong');
+        });
+        if (fb) fb.remove();
+        if (onDone) onDone();
+        return resolve(right, right ? r.right : r.wrong[k], card, right && !missed ? 25 : 0, missed);
+      }
+      // Wrong inside the level: say why the one you picked IS the pattern, let them go again.
+      missed = true;
+      b.disabled = true;
+      b.classList.add('wrong');
+      cur.streak = 0; updCombo();
+      recordMiss();
+      buzz([30, 40, 30]);
+      if (fb) fb.remove();
+      fb = el('div', 'feedback bad', `<b>✗ That one fits the pattern</b>${r.wrong[k]}`);
+      card.appendChild(fb);
+      linkTerms(fb);
+      fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    };
+    box.appendChild(b);
+  });
+  card.appendChild(box);
+  stage.appendChild(card);
+  if (oneShot) stage.appendChild(el('div', 'cta'));
+}
+
 /* ---------- answer resolution + miss tracking ---------- */
 function recordMiss() {
   const key = cur.stepKey;
@@ -921,12 +1112,14 @@ function clearMiss() {
   if (key && state.misses[key]) { delete state.misses[key]; save(); }
 }
 
-function resolve(right, why, card, gain) {
+/* keepMiss: a right answer reached after a wrong one (a game's recognise
+   question lets you try again) must not wipe the miss off the Review pile. */
+function resolve(right, why, card, gain, keepMiss) {
   if (right) {
     cur.right = (cur.right || 0) + 1;
     cur.streak++;
     if (cur.streak > state.bestStreak) state.bestStreak = cur.streak;
-    clearMiss();
+    if (!keepMiss) clearMiss();
     buzz(12);
   } else {
     cur.streak = 0;
@@ -937,6 +1130,7 @@ function resolve(right, why, card, gain) {
   const bonus = right && cur.streak >= 3 ? 10 : 0;
   // A test pays out once, at the end, so per-question XP is not shown.
   const label = !right ? '✗ Not quite'
+    : keepMiss ? '✓ That\'s the one'
     : cur.exam ? `✓ Correct — ${cur.right} of ${cur.exam.total}`
     : cur.streak >= 3 ? `🔥 ${cur.streak} in a row! +${gain + bonus} XP`
     : `✓ Correct  +${gain} XP`;
