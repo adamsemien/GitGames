@@ -1,12 +1,13 @@
 /* ============================================================
    TRACK: Systems Thinking
    How to think before the tools. Every level is the same three beats:
-     1. a short lesson built on one everyday analogy - the scene, not the answer
-     2. a small turn-based game, played before anything is explained
-     3. a debrief (chosen by how you did) that names what you just felt,
-        then a "same shape, different room" question
-   The vocabulary word appears once, in the debrief, after you have felt it,
-   so lessons deliberately avoid it.
+     1. a short plain-English lesson: what the idea is, everyday examples,
+        what to do about it, then how the game works
+     2. a small turn-based game to try the idea out
+     3. a short debrief (chosen by how you did): what happened, then the
+        lesson in one or two sentences, then a "spot it" question
+   Plain explanations first, no extended analogies - players found the
+   analogy-first version too indirect.
 
    Game shape (rendered by the one SIM renderer in app.js):
      init() -> state            step(state, actionId) -> new state (pure)
@@ -93,36 +94,33 @@ const football = {
   },
   debrief: {
     bad: [
-      `Your team looked unbeatable on paper and played like strangers. You kept picking the biggest number, and the biggest number was usually a star out of position, a star who needs the ball, or both. By the end, several people wanted the ball and nobody was minding the goal.`,
-      `Nearly everyone does this. The rating is the only number on the screen, it goes up every time you pick a star, and going up feels like winning. But the rating adds up the parts. The games measure how the parts fit.`,
-      `The idea: what a group does comes from how its parts fit together, not from adding up how good each one is. When a whole behaves in a way none of its parts do on their own, that is called <i>emergence</i> - and it cuts both ways.`
+      'You won only a few games. Your team looked great on paper because you picked the highest ratings, but many of those players were out of position or all wanted the ball.',
+      'The lesson: a group\'s results come from how its parts fit together, not from adding up how good each part is. This is called <i>emergence</i>.'
     ],
     mid: [
-      `A decent season. Some of your picks fitted their roles and some were stars you could not say no to. The stars pushed the rating up; the ones out of position, or fighting over the ball, quietly cost you games.`,
-      `That is the usual pattern: you trust the fit for a few picks, then a 97 comes along and it feels silly to turn it down.`,
-      `The idea: what a group does comes from how its parts fit together, not from adding up how good each one is. When a whole behaves in a way none of its parts do on their own, that is called <i>emergence</i> - and it cuts both ways.`
+      'You won some and lost some. A few picks fitted their roles and a few were stars who didn\'t.',
+      'The lesson: a group\'s results come from how its parts fit together, not from adding up how good each part is. This is called <i>emergence</i>.'
     ],
     good: [
-      `You won most of your games with a team that looked ordinary on paper. You picked people who fitted the role, and you did not fill the side with players who all need the ball.`,
-      `Passing on a 97 feels wrong, and most people cannot do it. You did, because a keeper who is a keeper beats a winger in gloves.`,
-      `The idea: what a group does comes from how its parts fit together, not from adding up how good each one is. When a whole behaves in a way none of its parts do on their own, that is called <i>emergence</i> - and it cuts both ways.`
+      'You won most games with a team that looked ordinary on paper, because you picked players who fitted their roles and didn\'t stack the team with ball-hogs.',
+      'The lesson: a group\'s results come from how its parts fit together, not from adding up how good each part is. This is called <i>emergence</i>.'
     ]
   },
   recognise: {
-    q: 'Three of these are the eleven-stars problem. Which one is the odd one out?',
+    q: 'Which one is NOT about how the parts fit together?',
     choices: [
-      'A supergroup of five famous musicians makes an album nobody remembers.',
-      'A dinner party of your six funniest friends goes flat because they all want the spotlight.',
-      'You keep turning a hotel shower hotter because it still feels cold, then it arrives scalding.',
-      'A kitchen hires a top chef for every station, and plates still come out late because nobody runs the pass.'
+      'Five famous musicians form a band and make a forgettable album.',
+      'A dinner party of your six funniest friends goes flat because they all talk over each other.',
+      'You keep turning a shower hotter because it still feels cold, then it suddenly goes scalding.',
+      'A restaurant hires a top chef for every station, but nobody organises the orders, so the food comes out late.'
     ],
     odd: 2,
-    right: 'The shower is the odd one. Nothing there is about how parts fit - the hot water is simply arriving late while you keep turning the handle. That shape has its own level: <b class="nolink">Delays</b>, the slow shower.',
+    right: 'Right. The shower is about a delay - the hot water arrives late. That\'s level 3, <b class="nolink">Delays</b>.',
     wrong: [
-      'That one is the pattern. Five great musicians, each used to being the one everyone follows. The album is what happens between them, and nobody was in charge of the between.',
-      'That one is the pattern. Six people who can each carry a room, all in one room. How the evening goes belongs to the mix, not to any guest.',
+      'That one IS about fit. Each musician is great, but they don\'t work well together.',
+      'That one IS about fit. Great guests, but together they cancel each other out.',
       '',
-      'That one is the pattern. Every station is brilliant, but the job that joins them up - calling the orders, checking the plates - was left empty. The weak spot is in the gaps between the parts.'
+      'That one IS about fit. Every chef is great, but the job that connects them is missing.'
     ]
   }
 };
@@ -173,36 +171,33 @@ const bathtub = {
   },
   debrief: {
     bad: [
-      `The bath got away from you. You were watching the water level - which is what a bath is for - and the level kept moving even right after you had "fixed" it.`,
-      `That is because the level never moves by itself. Every turn it changes by exactly what came in minus what went out. If the tap pours 10 and the drain takes 4, the tub gains 6 this turn, and 6 the next, however fine it looks right now. Almost everyone reacts to the level instead of that gap, so they always react late.`,
-      `The idea: to hold a pile of anything steady, match what goes in to what goes out, then leave it alone. The pile is a <i>stock</i> - a balance, a reservoir, anything that builds up over time. What fills or drains it is a <i>flow</i>.`
+      'The bath went outside the lines. You were probably watching the water level, but the level keeps moving as long as the water coming in and going out are different.',
+      'The lesson: a <i>stock</i> (the water) only changes by its <i>flows</i> - what comes in minus what goes out. Make them equal and the stock stays steady.'
     ],
     mid: [
-      `Mostly between the lines, with a scare or two. The moments it slipped were probably just after the drain clogged or the pressure dropped: the level looked fine, so it felt safe to leave it, but the gap had changed underneath you.`,
-      `That is the trap. The level tells you what already happened. The gap between in and out tells you what happens next.`,
-      `The idea: to hold a pile of anything steady, match what goes in to what goes out, then leave it alone. The pile is a <i>stock</i> - a balance, a reservoir, anything that builds up over time. What fills or drains it is a <i>flow</i>.`
+      'Mostly between the lines, but it slipped when the drain clogged or the pressure dropped. The flows changed and the level followed.',
+      'The lesson: a <i>stock</i> (the water) only changes by its <i>flows</i> - what comes in minus what goes out. Make them equal and the stock stays steady.'
     ],
     good: [
-      `Steady hands. You watched the two small numbers under the tub - in and out - and not just the level. When the drain clogged, you closed the gap before the tub told you to.`,
-      `Most people chase the level. You managed the gap, which is harder, because when you get it right nothing seems to happen.`,
-      `The idea: to hold a pile of anything steady, match what goes in to what goes out, then leave it alone. The pile is a <i>stock</i> - a balance, a reservoir, anything that builds up over time. What fills or drains it is a <i>flow</i>.`
+      'You kept in and out roughly equal, so the level stayed steady - and you adjusted when the drain clogged.',
+      'The lesson: a <i>stock</i> (the water) only changes by its <i>flows</i> - what comes in minus what goes out. Make them equal and the stock stays steady.'
     ]
   },
   recognise: {
-    q: 'Three of these are a bathtub. Which one is the odd one out?',
+    q: 'Which one is NOT something filling up or draining?',
     choices: [
-      'Your friend group is more fun together than any one of your friends is on their own.',
-      'Your savings keep shrinking even after a pay rise, because your spending crept up by more.',
-      'Your inbox grows every week even though you answer loads of emails, because more arrive than you clear.',
-      'A lake stays the same size all summer while rivers pour into it, because just as much evaporates.'
+      'Your friend group is more fun together than any one friend on their own.',
+      'Your savings shrink even after a pay rise, because your spending went up more.',
+      'Your inbox keeps growing because more emails arrive than you answer.',
+      'A lake stays the same size because the same amount flows in as evaporates.'
     ],
     odd: 0,
-    right: 'The friend group is the odd one. Nothing is filling up or draining away there - it is the whole being different from its parts, which was level 1, <b class="nolink">Parts vs the whole</b>.',
+    right: 'Right. A fun friend group is about how people fit together - level 1, <b class="nolink">Parts vs the whole</b>.',
     wrong: [
       '',
-      'That one is a bathtub. The balance only grows while money in beats money out. A raise helps only if it widens that gap - here spending grew faster, so the tub still drains.',
-      'That is a bathtub too. The inbox is the water, new emails are the tap and your replies are the drain. Working hard on the drain does nothing if the tap runs faster.',
-      'That one is a bathtub in its calmest form: water pouring in and out at the same rate, so the level never moves. Steady does not mean nothing is happening.'
+      'That one IS a stock: savings only grow if money in beats money out.',
+      'That one IS a stock: the inbox is the pile, new emails flow in, replies flow out.',
+      'That one IS a stock: in equals out, so the level stays the same.'
     ]
   }
 };
@@ -257,35 +252,32 @@ const shower = {
   },
   debrief: {
     bad: [
-      `You chased the water. It was cold, so you turned it up, and it was still cold, so you turned it up again - and then both turns arrived at once. On the way down you did the same thing in reverse. See-saw.`,
-      `Nearly everyone does this, because the only thing your skin can feel is the water on it right now, and that water was set two turns ago. The dial was telling you the truth the whole time. It just was not the number you were feeling.`,
-      `The idea: when a result arrives late, act on where things are heading, not on where they are - then wait. The gap between the push and the result is a <i>delay</i>, and it turns sensible people into a see-saw.`
+      'The water swung between too cold and too hot. You kept turning the handle because nothing seemed to change - then all those turns arrived at once.',
+      'The lesson: when there\'s a <i>delay</i> between action and result, make one change and wait for it to land. Go by where things are heading (the dial), not only by what you feel right now.'
     ],
     mid: [
-      `You got there in the end, with a detour through too hot or too cold on the way. Somewhere in the middle you turned the handle again before the last turn had arrived - that is where the wobble came from.`,
-      `That is normal. Doing nothing while the water is still wrong feels like giving up, even when the fix is already in the pipe.`,
-      `The idea: when a result arrives late, act on where things are heading, not on where they are - then wait. The gap between the push and the result is a <i>delay</i>, and it turns sensible people into a see-saw.`
+      'You got there, but overshot on the way by turning the handle again before your last change had arrived.',
+      'The lesson: when there\'s a <i>delay</i> between action and result, make one change and wait for it to land. Go by where things are heading (the dial), not only by what you feel right now.'
     ],
     good: [
-      `Lovely shower. You turned the handle, then left it alone while the water caught up. The first two turns were always going to be cold - that water was already in the pipe before you arrived.`,
-      `Most people cannot bring themselves to do nothing while the water is still wrong. You trusted the dial over your back, which is the whole trick.`,
-      `The idea: when a result arrives late, act on where things are heading, not on where they are - then wait. The gap between the push and the result is a <i>delay</i>, and it turns sensible people into a see-saw.`
+      'You made a change and then waited for it. The first two turns were always going to be cold - that water was already in the pipe.',
+      'The lesson: when there\'s a <i>delay</i> between action and result, make one change and wait for it to land. Go by where things are heading (the dial), not only by what you feel right now.'
     ]
   },
   recognise: {
-    q: 'Three of these are the slow shower. Which is the odd one out?',
+    q: 'Which one is NOT a delay?',
     choices: [
-      'You are still hungry, so you eat a second plate, and twenty minutes later you are uncomfortably full.',
-      'A country raises interest rates, nothing seems to happen for months, so it raises them again - and the economy stalls hard.',
-      'You keep turning up the radiator in a cold flat with an old boiler, and wake at 3am roasting.',
-      'Every friend you tell about a new café tells two more, and by Friday there is a queue round the block.'
+      'You eat a second plate because you\'re still hungry, and 20 minutes later you\'re stuffed.',
+      'A bank raises interest rates, sees no change for months, raises them again - and the economy slows sharply.',
+      'You keep turning up an old slow radiator in the evening and wake up at 3am roasting.',
+      'Everyone who tries a new café tells two friends, and by Friday there\'s a queue round the block.'
     ],
     odd: 3,
-    right: 'The café is the odd one. Nothing there arrives late - each telling makes more telling, and it snowballs. That is a loop that feeds itself, and it has its own level: <b class="nolink">Reinforcing loops</b>.',
+    right: 'Right. The café grows because each person brings more people - that\'s level 5, <b class="nolink">Reinforcing loops</b>, not a delay.',
     wrong: [
-      'That one is the shower. Your stomach tells your brain it is full about twenty minutes after the fact, so the second plate was ordered by an out-of-date signal.',
-      'That one is the shower, just slower. Interest rates take months to reach prices, so the second raise lands on top of the first one that was still on its way.',
-      'That one is the shower with a radiator. The old boiler takes an hour to warm the room, so every turn of the dial in the evening arrives at 3am.',
+      'That one IS a delay: feeling full takes about 20 minutes to catch up with eating.',
+      'That one IS a delay: interest rates take months to have an effect.',
+      'That one IS a delay: the radiator takes hours to heat the room.',
       ''
     ]
   }
@@ -333,36 +325,33 @@ const thermostat = {
   },
   debrief: {
     bad: [
-      `You flew past 21 like it was not there. High until it was warm, off until it was cold, high again. The radiator was still full of heat when you switched it off, so the room kept climbing - and it was still cold when you switched it back on.`,
-      `That on-off-on rhythm is what nearly everyone does, because "too cold, full blast" is the obvious answer to cold. But the room was already trying to settle by itself: the warmer it gets, the faster it leaks heat. Leave the heater at one setting and heat in and heat out meet somewhere, and the room stops there.`,
-      `The idea: some things pull themselves back to a resting point, and your job is to pick the point, not to fight the way there. A goal, a gap, and a push that shrinks as the gap shrinks is a <i>balancing loop</i>. Your hunger works like this, and so do shop prices.`
+      'The room kept swinging past 22 and back below 20. Switching high on and off doesn\'t work, because the radiator keeps heating after you turn it off.',
+      'The lesson: a <i>balancing loop</i> pulls things back toward a target on its own. Choose the right setting and let it settle, instead of fighting it.'
     ],
     mid: [
-      `You got there, with a lap or two past 22 or below 20 on the way. The overshoots came from the radiator: it holds heat after you switch it off and takes a while to warm after you switch it on.`,
-      `Most people use a heater like a light switch. It is more like a dimmer - and the room does half the work, because it leaks faster the hotter it gets.`,
-      `The idea: some things pull themselves back to a resting point, and your job is to pick the point, not to fight the way there. A goal, a gap, and a push that shrinks as the gap shrinks is a <i>balancing loop</i>. Your hunger works like this, and so do shop prices.`
+      'You got close, but overshot a few times - usually from leaving it on high too long.',
+      'The lesson: a <i>balancing loop</i> pulls things back toward a target on its own. Choose the right setting and let it settle, instead of fighting it.'
     ],
     good: [
-      `Smooth. You used high to get going, then backed off while the room was still cold and the radiator was still hot, and let it settle on low. Backing off before you arrive is the hard bit.`,
-      `Low was never going to overshoot, because the room loses more heat the warmer it gets. Heat in and heat out met at about 21 and stayed there. You did not have to fight it.`,
-      `The idea: some things pull themselves back to a resting point, and your job is to pick the point, not to fight the way there. A goal, a gap, and a push that shrinks as the gap shrinks is a <i>balancing loop</i>. Your hunger works like this, and so do shop prices.`
+      'You warmed up on high, backed off before reaching 21, and let low hold it steady.',
+      'The lesson: a <i>balancing loop</i> pulls things back toward a target on its own. Choose the right setting and let it settle, instead of fighting it.'
     ]
   },
   recognise: {
-    q: 'Three of these pull themselves back to a resting point. Which is the odd one out?',
+    q: 'Which one is NOT a balancing loop?',
     choices: [
-      'You eat a big lunch, skip your usual snack, and are hungry again right on time for dinner.',
-      'A bakery sells out of cakes by noon, so it nudges the price up until they last the day.',
-      'The more followers an account has, the more new people see it, and the faster it gains followers.',
-      'Your body sweats when it is hot and shivers when it is cold, and stays near 37 degrees.'
+      'You eat a big lunch, skip your snack, and get hungry right on time for dinner.',
+      'A bakery raises the price of cakes that sell out by noon, until they last all day.',
+      'The more followers an account has, the more people see it, and the faster it gains followers.',
+      'Your body sweats when hot and shivers when cold, and stays near 37 degrees.'
     ],
     odd: 2,
-    right: 'The followers are the odd one. That loop has no resting point: more brings more. It is the opposite shape, and it is the next level, <b class="nolink">Reinforcing loops</b>.',
+    right: 'Right. More followers bringing more followers keeps growing instead of settling - that\'s the next level, level 5, <b class="nolink">Reinforcing loops</b>.',
     wrong: [
-      'That one pulls back to a resting point. Hunger rises as you run low and falls when you eat, so a big lunch just moves the timing.',
-      'That one settles too. The price rises while cakes are scarce and stops rising once they last - the gap closes as the price moves.',
+      'That one IS a balancing loop: hunger rises when you\'re low and drops when you eat.',
+      'That one IS a balancing loop: the price moves until supply and demand match.',
       '',
-      'That is the textbook one. Your body notices the gap from 37 and pushes against it, gently, whichever way it needs.'
+      'That one IS a balancing loop: your body pushes back toward 37 degrees.'
     ]
   }
 };
@@ -402,36 +391,33 @@ const rumour = {
   },
   debrief: {
     bad: [
-      `Either the room was empty or the street outside was full. If it was the crowd: the early days looked so small - 3 people, then 9 - that it felt safe to keep saying "tell two friends". Then 27 became 81 became 243.`,
-      `Almost everyone misjudges this, because our gut expects things to grow by the same amount each day, not by the same multiple. Something that triples looks like nothing, then nothing, then everything.`,
-      `The idea: when more of something brings even more of it, it creeps and then explodes - so you steer it early or not at all. That is a <i>reinforcing loop</i>: rumours, compound interest, and debt that grows on its own interest.`
+      'You ended well outside 100 to 150. If the crowd got too big: the numbers looked tiny at first (3, then 9), so you kept spreading it - then it tripled past the limit.',
+      'The lesson: a <i>reinforcing loop</i> grows by multiplying, so it starts slow and then explodes. Slow it down while the numbers still look small.'
     ],
     mid: [
-      `Close, but a bit off. Maybe you reined it in a day late and turned people away, or put the brakes on too early and played to a half-empty room.`,
-      `The last day is always the biggest, because it multiplies everything before it. The move that matters most is the one that feels least urgent: easing off while the numbers still look small.`,
-      `The idea: when more of something brings even more of it, it creeps and then explodes - so you steer it early or not at all. That is a <i>reinforcing loop</i>: rumours, compound interest, and debt that grows on its own interest.`
+      'Close, but you slowed it down a day too late (too many people) or too early (not enough).',
+      'The lesson: a <i>reinforcing loop</i> grows by multiplying, so it starts slow and then explodes. Slow it down while the numbers still look small.'
     ],
     good: [
-      `A full room and nobody turned away. You let it spread fast while it was small, then eased off while the numbers still looked harmless - exactly when easing off feels wrong.`,
-      `Most people wait until the number looks big to act, and by then tomorrow is already going to be huge.`,
-      `The idea: when more of something brings even more of it, it creeps and then explodes - so you steer it early or not at all. That is a <i>reinforcing loop</i>: rumours, compound interest, and debt that grows on its own interest.`
+      'You spread it fast while the numbers were small, then slowed down before they got big.',
+      'The lesson: a <i>reinforcing loop</i> grows by multiplying, so it starts slow and then explodes. Slow it down while the numbers still look small.'
     ]
   },
   recognise: {
-    q: 'Three of these feed themselves. Which is the odd one out?',
+    q: 'Which one is NOT a reinforcing loop?',
     choices: [
-      'Money left in a savings account earns interest, and next year the interest earns interest too.',
-      'You leave a mug of tea on your desk and it cools until it matches the room.',
-      'An unpaid credit card bill grows because the interest is added on, then charged interest itself.',
-      'A group chat gets louder: every message gets two replies, and each reply gets replies.'
+      'Savings earn interest, and next year the interest earns interest too.',
+      'A cup of tea cools down until it\'s the same temperature as the room.',
+      'An unpaid credit card bill grows because you\'re charged interest on the interest.',
+      'Every message in a group chat gets two replies, and each reply gets more replies.'
     ],
     odd: 1,
-    right: 'The tea is the odd one. It heads for a resting point - room temperature - and slows as it gets close. That is a balancing loop, back in level 4, <b class="nolink">Balancing loops</b>.',
+    right: 'Right. The tea settles at room temperature - that\'s a target, so it\'s level 4, <b class="nolink">Balancing loops</b>.',
     wrong: [
-      'That one feeds itself: the bigger the pot, the bigger this year\'s interest, the bigger next year\'s pot. Slow, then fast.',
+      'That one IS a reinforcing loop: more money earns more interest, which makes more money.',
       '',
-      'The same loop as savings, pointed the wrong way. Debt makes interest, and interest makes more debt.',
-      'That one feeds itself too. Each reply is a new message that earns replies of its own - which is how 40 unread appear while you are in the shower.'
+      'That one IS a reinforcing loop: more debt means more interest, which means more debt.',
+      'That one IS a reinforcing loop: each reply creates more replies.'
     ]
   }
 };
@@ -472,35 +458,32 @@ const bartender = {
   },
   debrief: {
     bad: [
-      `You sold a lot of drinks, and your bonus is excellent. The bar is in trouble: the regulars have drifted off somewhere quieter, and next month there will be nobody to sell to.`,
-      `You did exactly what the job asked. You were paid per drink, so you made every night about drinks - the shots, the two-for-ones, the loud nights - while the people who pay the rent quietly stopped coming. Nearly everyone plays it this way, because it is the number on the screen and the number on their payslip.`,
-      `The idea: sensible people with a narrow view, paid on the wrong number, can steer a whole place off a cliff without anyone doing anything stupid. That is <i>bounded rationality</i> - every choice makes sense from where you stand, and the view from there is too small.`
+      'Your bonus was big, but most regulars stopped coming. Pushing drinks paid you well every night and slowly drove away the people the bar depends on.',
+      'The lesson: when people are rewarded on one narrow number, sensible choices can hurt the whole system. That\'s <i>bounded rationality</i>. To change the behaviour, change what people are rewarded on or what they can see.'
     ],
     mid: [
-      `A decent month for you, a so-so month for the bar. You mixed nights that pleased the till with nights that looked after the regulars.`,
-      `That is roughly how most real bars run: a tug of war between tonight's number and the people who pay the rent, settled by mood rather than by design.`,
-      `The idea: sensible people with a narrow view, paid on the wrong number, can steer a whole place off a cliff without anyone doing anything stupid. That is <i>bounded rationality</i> - every choice makes sense from where you stand, and the view from there is too small.`
+      'You mixed nights that boosted your bonus with nights that looked after the regulars. The bar is okay, not great.',
+      'The lesson: when people are rewarded on one narrow number, sensible choices can hurt the whole system. That\'s <i>bounded rationality</i>. To change the behaviour, change what people are rewarded on or what they can see.'
     ],
     good: [
-      `You looked after the regulars and ended the month with at least as many as you started with. Your bonus was smaller than it could have been.`,
-      `That was a choice against your own number. Most people do not make it - not because they are selfish, but because the bonus is real and the regulars are a vague shape at the edge of the room.`,
-      `The idea: sensible people with a narrow view, paid on the wrong number, can steer a whole place off a cliff without anyone doing anything stupid. That is <i>bounded rationality</i> - every choice makes sense from where you stand, and the view from there is too small.`
+      'You kept the regulars coming, even though it meant a smaller bonus.',
+      'The lesson: when people are rewarded on one narrow number, sensible choices can hurt the whole system. That\'s <i>bounded rationality</i>. To change the behaviour, change what people are rewarded on or what they can see.'
     ]
   },
   recognise: {
-    q: 'Three of these are sensible people steering a place wrong. Which is the odd one out?',
+    q: 'Which one is NOT people chasing a narrow reward?',
     choices: [
-      'A call centre pays staff by calls handled per hour, so they rush every caller off the phone and the same people keep ringing back.',
-      'A school judged only on exam results stops teaching anything that is not on the exam.',
-      'Every driver takes the shortcut their map app suggests, and the shortcut becomes the slowest road in town.',
-      'One small change to a café\'s loyalty card doubles its trade, while five other changes did almost nothing.'
+      'Call centre staff are judged on short calls, so they rush callers, who then call back again.',
+      'A school judged only on exam results stops teaching anything that isn\'t on the exam.',
+      'A salesperson paid per sale pushes deals customers don\'t need, and customers stop coming back.',
+      'One small change to a café\'s loyalty card doubles its sales, while five other changes did almost nothing.'
     ],
     odd: 3,
-    right: 'The loyalty card is the odd one. That is about finding the one push that moves everything, which is level 10, <b class="nolink">Leverage points</b>.',
+    right: 'Right. The loyalty card is one small change with a big effect - level 10, <b class="nolink">Leverage points</b>.',
     wrong: [
-      'That is the pattern. Each person does what they are paid for, and nobody is paid for the caller\'s problem actually being solved.',
-      'That is the pattern. Teachers are doing the sensible thing for the number they are judged on - and that number is not learning.',
-      'That is the pattern. Each driver\'s choice makes sense from their own screen. Nobody\'s screen shows all the other drivers making the same choice.',
+      'That one IS the pattern: staff do what they\'re measured on, not what solves the caller\'s problem.',
+      'That one IS the pattern: teachers follow the number they\'re judged on.',
+      'That one IS the pattern: the salesperson follows their commission, and the business loses customers.',
       ''
     ]
   }
@@ -551,36 +534,33 @@ const promo = {
   },
   debrief: {
     bad: [
-      `The promo worked beautifully - for about a week. After that, Friday regulars started waiting for Tuesday's deal, Friday got thinner, and whenever you skipped the promo, Tuesday fell off a cliff because people had learned to wait for it.`,
-      `Nearly everyone reaches for the promo, because it works the first time and it works fast. The fix you could see pulled against a problem you could not: it taught your customers a new habit.`,
-      `The idea: a quick fix that works now can quietly make the problem worse later, which makes you need the fix again. The name for this shape is <i>fixes that fail</i>.`
+      'The promo gave you a quick bump, then takings slid. Friday customers started waiting for Tuesday\'s deal, and when you stopped the promo, Tuesday crashed too.',
+      'The lesson: a quick fix with a side effect can make the problem worse over time, so you need it again and again. These are called <i>fixes that fail</i>. Look for the fix that deals with the cause.'
     ],
     mid: [
-      `You ended up roughly where you started. Maybe you ran the promo, noticed Friday slipping and backed off - but deal-hunters hang around for a while after the deals stop.`,
-      `Spotting the slide is the hard part, because the first weeks look like success. You spotted it, just a little late.`,
-      `The idea: a quick fix that works now can quietly make the problem worse later, which makes you need the fix again. The name for this shape is <i>fixes that fail</i>.`
+      'You ended roughly where you started. The promo\'s side effects cancelled out its bump.',
+      'The lesson: a quick fix with a side effect can make the problem worse over time, so you need it again and again. These are called <i>fixes that fail</i>. Look for the fix that deals with the cause.'
     ],
     good: [
-      `Slow start, strong finish. Paying for the lunch menu cost you in the first week and felt like losing, while a promo would have looked like winning. By the end, Tuesday had its own reason to exist.`,
-      `Most people cannot stomach a dip now for a rise later, especially with a quick bump sitting right there. You could.`,
-      `The idea: a quick fix that works now can quietly make the problem worse later, which makes you need the fix again. The name for this shape is <i>fixes that fail</i>.`
+      'The lunch menu cost you money at first, then raised takings every week after.',
+      'The lesson: a quick fix with a side effect can make the problem worse over time, so you need it again and again. These are called <i>fixes that fail</i>. Look for the fix that deals with the cause.'
     ]
   },
   recognise: {
-    q: 'Three of these are fixes that fail. Which is the odd one out?',
+    q: 'Which one is NOT a fix that fails?',
     choices: [
-      'A pond\'s fish crash because every fisher takes just a bit more than their share.',
-      'A city widens a busy road, it fills with even more traffic, so the city widens it again.',
-      'You pay off one credit card with another, and next month you are further behind.',
-      'A shop runs a sale every weekend to hit its numbers, and now nobody buys anything at full price.'
+      'Fish in a lake run out because every fisher takes a bit more than their share.',
+      'A city widens a busy road, more people start driving, and it\'s jammed again.',
+      'You pay off one credit card with another, and next month you owe more.',
+      'A shop holds a sale every weekend, and now nobody pays full price.'
     ],
     odd: 0,
-    right: 'The pond is the odd one. That is lots of people each taking a little too much from something shared: level 9, <b class="nolink">Tragedy of the commons</b>.',
+    right: 'Right. The fish run out because many people overuse something shared - level 9, <b class="nolink">Tragedy of the commons</b>.',
     wrong: [
       '',
-      'That one is a fix that fails. A wider road makes driving easier, so more people drive, so the road jams again - and the same fix gets applied again.',
-      'That is the pattern. Moving the debt feels like progress, costs a fee, and makes the next shuffle more urgent.',
-      'That is the pattern. The sale saves this weekend and teaches customers never to pay full price, so now the shop needs the sale.'
+      'That one IS a fix that fails: the wider road attracts more cars.',
+      'That one IS a fix that fails: moving the debt adds fees and a bigger bill.',
+      'That one IS a fix that fails: the sale teaches customers to wait for sales.'
     ]
   }
 };
@@ -625,36 +605,33 @@ const headache = {
   },
   debrief: {
     bad: [
-      `Every day felt fine by mid-morning, and every morning got worse. The pills fixed the feeling while the thing causing it grew: late nights because you felt fine, and a rebound headache every time a pill wore off.`,
-      `Almost everyone reaches for the pill. It works in twenty minutes, it is in the drawer, and the other options do not feel like anything today. That is exactly the problem: the fix that feels like something takes the pressure off the fix that works.`,
-      `The idea: when a quick fix handles the symptom, you lose the reason to fix the cause, and the cause gets worse while you are not looking. That is <i>shifting the burden</i> - the load moves onto the quick fix, and you come to depend on it.`
+      'Each day felt fine after the pill, but every morning got worse. The pills hid the pain while the real cause (sleep) and rebound headaches built up.',
+      'The lesson: a quick fix for the symptom can stop you fixing the real cause, which then gets worse. That\'s <i>shifting the burden</i>. Use the quick fix if you must, but do the slow fix too.'
     ],
     mid: [
-      `A mix of pills and early nights. Your mornings got a little better, but each pill added a rebound that the good nights then had to pay off.`,
-      `That is how it usually goes. The pill days feel like the good days, so they are hard to give up, even though they are the ones making tomorrow worse.`,
-      `The idea: when a quick fix handles the symptom, you lose the reason to fix the cause, and the cause gets worse while you are not looking. That is <i>shifting the burden</i> - the load moves onto the quick fix, and you come to depend on it.`
+      'A mix of pills and good nights. Your mornings got a bit better, but each pill added a rebound headache.',
+      'The lesson: a quick fix for the symptom can stop you fixing the real cause, which then gets worse. That\'s <i>shifting the burden</i>. Use the quick fix if you must, but do the slow fix too.'
     ],
     good: [
-      `Some rough days early on, and by the end you were waking up clear. You put up with the headache while the sleep and water did their slow work.`,
-      `That is rare. Sitting with a headache while there is a pill in the drawer feels almost silly. But you were fixing the thing, not the feeling.`,
-      `The idea: when a quick fix handles the symptom, you lose the reason to fix the cause, and the cause gets worse while you are not looking. That is <i>shifting the burden</i> - the load moves onto the quick fix, and you come to depend on it.`
+      'A few rough days, then you were waking up clear. You fixed the cause, not just the pain.',
+      'The lesson: a quick fix for the symptom can stop you fixing the real cause, which then gets worse. That\'s <i>shifting the burden</i>. Use the quick fix if you must, but do the slow fix too.'
     ]
   },
   recognise: {
-    q: 'Three of these shift the burden onto a quick fix. Which is the odd one out?',
+    q: 'Which one is NOT shifting the burden?',
     choices: [
-      'A team always calls the one senior developer to fix outages, so nobody else ever learns the system.',
-      'A bath overflows because the tap has been pouring in faster than the drain for an hour.',
-      'You use coffee to get through every afternoon, and never look at why you are sleeping badly.',
-      'A parent does their kid\'s homework every night, so the kid never learns how to start it.'
+      'A team always calls the same senior developer to fix problems, so nobody else learns how.',
+      'A bath overflows because the tap has been running faster than the drain for an hour.',
+      'You drink coffee to get through every afternoon instead of fixing your sleep.',
+      'A parent does their kid\'s homework every night, so the kid never learns to do it.'
     ],
     odd: 1,
-    right: 'The bath is the odd one. Nothing there is a quick fix crowding out a real one - it is just more coming in than going out, for too long. That is level 2, <b class="nolink">Stocks and flows</b>.',
+    right: 'Right. The bath is just more coming in than going out - level 2, <b class="nolink">Stocks and flows</b>.',
     wrong: [
-      'That one shifts the burden. The hero fix works every time, so the team never builds its own skill - and needs the hero more each time.',
+      'That one IS shifting the burden: the quick fix (the expert) stops the team learning.',
       '',
-      'That is the pattern. Coffee handles the tiredness today and takes the pressure off fixing the sleep that causes it.',
-      'That is the pattern. The homework gets done tonight, and the thing that would end the need - the kid learning - never gets its chance.'
+      'That one IS shifting the burden: coffee hides the tiredness, so the sleep never gets fixed.',
+      'That one IS shifting the burden: the homework gets done, but the kid never learns.'
     ]
   }
 };
@@ -698,36 +675,33 @@ const fridge = {
   },
   debrief: {
     bad: [
-      `You ate well for a few days. So did everyone, because they saw you take three and did the same. Then the fridge ran low, nobody wanted to pay into a kitty for an empty fridge, and the whole thing fell apart.`,
-      `Taking a bit more is the sensible move for any one person - you get the extra portion, and the cost is split four ways. Every housemate does the same sum, and it adds up to nothing left. Almost everyone takes the extra, at least at first.`,
-      `The idea: when everyone can take from a shared thing and nobody owns it, each sensible grab adds up to ruin. That is the tragedy of the <i>commons</i> - fridges, fishing grounds, the quiet in a library, the attention in a group chat.`
+      'The fridge ran out. You took extra, your housemates copied you, and once the fridge got low nobody wanted to pay into the kitty.',
+      'The lesson: when everyone takes a bit more from something shared, it runs out. That\'s the tragedy of the <i>commons</i>. Taking a fair share - and being seen to - keeps it going.'
     ],
     mid: [
-      `The fridge survived, just. There were days you took a little extra and watched the others follow, and days you reined it in.`,
-      `That is the uncomfortable part: your housemates were not greedy people. They were copying what they saw. The habit in a shared space is set by whoever is most visible.`,
-      `The idea: when everyone can take from a shared thing and nobody owns it, each sensible grab adds up to ruin. That is the tragedy of the <i>commons</i> - fridges, fishing grounds, the quiet in a library, the attention in a group chat.`
+      'The fridge survived but got low. On the days you took extra, everyone else took more too.',
+      'The lesson: when everyone takes a bit more from something shared, it runs out. That\'s the tragedy of the <i>commons</i>. Taking a fair share - and being seen to - keeps it going.'
     ],
     good: [
-      `The fridge was still full on day eight, and so was everyone. You took your share and your housemates did the same, because that is what they saw you do.`,
-      `Nothing about it felt like winning. You did not get the extra portions, and nobody thanked you. That is why it is rare: the reward for keeping a shared thing alive is that it is still there.`,
-      `The idea: when everyone can take from a shared thing and nobody owns it, each sensible grab adds up to ruin. That is the tragedy of the <i>commons</i> - fridges, fishing grounds, the quiet in a library, the attention in a group chat.`
+      'You took a fair share, your housemates did the same, and the fridge stayed full.',
+      'The lesson: when everyone takes a bit more from something shared, it runs out. That\'s the tragedy of the <i>commons</i>. Taking a fair share - and being seen to - keeps it going.'
     ]
   },
   recognise: {
-    q: 'Three of these are a shared fridge. Which is the odd one out?',
+    q: 'Which one is NOT a tragedy of the commons?',
     choices: [
-      'Everyone in a group chat posts a few more memes than they read, and people start muting it.',
-      'Every village family grazes one extra cow on the shared field, and the grass never grows back.',
+      'Everyone in a group chat posts more than they read, and people start muting it.',
+      'Every family in a village grazes one extra cow on the shared field, and the grass dies.',
       'A thermostat keeps an office at 21 degrees whatever the weather.',
-      'Each person in a quiet library whispers "just a bit", and by lunchtime it is as loud as a café.'
+      'Everyone in a quiet library whispers \'just a bit\', and it ends up as loud as a café.'
     ],
     odd: 2,
-    right: 'The thermostat is the odd one. Nobody is taking from anything shared - it is a loop pulling towards a set point. That is level 4, <b class="nolink">Balancing loops</b>.',
+    right: 'Right. The thermostat holds a target - that\'s level 4, <b class="nolink">Balancing loops</b>, not overusing something shared.',
     wrong: [
-      'That is the pattern. The chat\'s attention is shared, so each extra post costs you nothing and costs everyone a little.',
-      'That is where the name comes from. One extra cow is a gain for one family and a tiny cost for everyone - until the field is mud.',
+      'That one IS the commons: everyone\'s attention is shared, and each extra post uses some up.',
+      'That one IS the commons: one extra cow helps one family and damages the field for everyone.',
       '',
-      'That is the pattern. The quiet belongs to everyone, so each small whisper feels free.'
+      'That one IS the commons: the quiet is shared, and each whisper uses a little of it.'
     ]
   }
 };
@@ -789,36 +763,33 @@ const coffee = {
   },
   debrief: {
     bad: [
-      `You tried the sensible things - cheaper coffee, longer hours, a nicer look - and each one nudged the number up a little. By week eight the shop was still struggling.`,
-      `Those were all real improvements with the same weakness: each one added a few walk-ins, once. Nothing about them grew. The idea that looked least like a business plan - learning your regulars' names and orders - was the one that changed how the shop grows. Regulars who feel known come back and bring friends, and the friends become regulars.`,
-      `The idea: in most systems a few places move everything and most barely move anything - and the big ones usually change how something grows, not how big it is today. A place like that is a <i>leverage point</i>.`
+      'Sales barely moved. The ideas you picked each added a few customers once, but nothing kept growing.',
+      'The lesson: look for the change that affects how something grows, not just how big it is today. That\'s a <i>leverage point</i>. Here it was learning regulars\' names - they come back and bring friends, who become regulars too.'
     ],
     mid: [
-      `The shop is doing better. You found the names idea, but maybe a bit late, so it only had a few weeks to grow.`,
-      `An idea that changes how something grows gets stronger the earlier you pull it, which is the opposite of how it feels: it pays nothing in its first week, so it seems safe to leave it till later.`,
-      `The idea: in most systems a few places move everything and most barely move anything - and the big ones usually change how something grows, not how big it is today. A place like that is a <i>leverage point</i>.`
+      'Sales went up. You found the names idea, but used it late, so it had less time to grow.',
+      'The lesson: look for the change that affects how something grows, not just how big it is today. That\'s a <i>leverage point</i>. Here it was learning regulars\' names - they come back and bring friends, who become regulars too.'
     ],
     good: [
-      `The shop is buzzing. You spotted that remembering people was different from the other ideas - not a bump, but a change to how the shop grows - and you pulled it early enough for it to build on itself.`,
-      `Most people spread their pushes evenly over sensible-looking ideas. The small, odd, human one moved everything.`,
-      `The idea: in most systems a few places move everything and most barely move anything - and the big ones usually change how something grows, not how big it is today. A place like that is a <i>leverage point</i>.`
+      'You used the names idea early, and your regulars kept multiplying.',
+      'The lesson: look for the change that affects how something grows, not just how big it is today. That\'s a <i>leverage point</i>. Here it was learning regulars\' names - they come back and bring friends, who become regulars too.'
     ]
   },
   recognise: {
-    q: 'Three of these are a small push in the right place. Which is the odd one out?',
+    q: 'Which one is NOT a small change with a big effect?',
     choices: [
-      'Bar staff are paid on drinks sold, so the bar sells lots of drinks and loses its regulars.',
-      'A school changes only its start time, from 8am to 9am, and grades, attendance and moods all improve.',
-      'A gym puts the stairs by the entrance and tucks the lift round a corner, and far more people take the stairs.',
-      'A company starts showing each team its own electricity use, and the bill drops by a fifth.'
+      'Bar staff are paid per drink sold, so they push drinks and the bar loses its regulars.',
+      'A school moves its start time from 8am to 9am, and grades, attendance and moods all improve.',
+      'A gym puts the stairs by the entrance and the lift round the corner, and far more people use the stairs.',
+      'A company shows each team its own electricity use, and the bill drops by a fifth.'
     ],
     odd: 0,
-    right: 'The bar is the odd one - that is sensible people paid on a narrow number, level 6, <b class="nolink">Bounded rationality</b>. Though notice: changing what the staff are paid on would be a leverage point.',
+    right: 'Right. The bar is people chasing a narrow reward - level 6, <b class="nolink">Bounded rationality</b>. Changing how the staff are paid would be the leverage point.',
     wrong: [
       '',
-      'That is leverage. One small setting changed how much everyone slept, and sleep sits underneath almost everything else.',
-      'That is leverage. The building makes the choice for people. Moving the stairs costs nothing and nudges thousands of decisions a day.',
-      'That is leverage too. Nothing changed except who could see what. When people can see the effect of their choices, the choices change.'
+      'That one IS leverage: one small change gave everyone more sleep, which improved everything else.',
+      'That one IS leverage: moving the stairs costs nothing and changes thousands of choices a day.',
+      'That one IS leverage: just letting people see their usage changed their behaviour.'
     ]
   }
 };
@@ -905,35 +876,32 @@ const mapwalk = {
   },
   debrief: {
     bad: [
-      `You did not make it to the café. Somewhere along the way the map and the street disagreed, and you went with the map - most likely marching off to the far bridge, because the map said that was the way across.`,
-      `That is what nearly everyone does. The map has been right a hundred times and it looks official. The street in front of you is one scruffy detail, easy to wave off as a fluke.`,
-      `The idea: the picture in your head is a tool, not the world - when the two disagree, believe the world and redraw the picture. That picture is a <i>mental model</i>, and everyone is running on one.`
+      'You didn\'t reach the café. The map said one thing, the street showed another, and you went with the map.',
+      'The lesson: the picture in your head - your <i>mental model</i> - can be out of date. When what you see disagrees with it, believe what you see and update the picture.'
     ],
     mid: [
-      `You got there, the long way round. You probably walked into the old bridge, or took a while to trust the footbridge right next to it, because it was not on the map.`,
-      `Updating once is easy. Accepting that the map was wrong about a second thing is where most people stall.`,
-      `The idea: the picture in your head is a tool, not the world - when the two disagree, believe the world and redraw the picture. That picture is a <i>mental model</i>, and everyone is running on one.`
+      'You got there the long way round - after walking into the broken bridge, or taking a while to trust the new footbridge.',
+      'The lesson: the picture in your head - your <i>mental model</i> - can be out of date. When what you see disagrees with it, believe what you see and update the picture.'
     ],
     good: [
-      `Straight there. At the river the old bridge was taped off and a new footbridge sat right beside it, missing from the map. You took it without a second thought.`,
-      `That sounds obvious written down. In the moment it means deciding your own eyes outrank an official-looking map, and most people hesitate.`,
-      `The idea: the picture in your head is a tool, not the world - when the two disagree, believe the world and redraw the picture. That picture is a <i>mental model</i>, and everyone is running on one.`
+      'You saw the old bridge was closed and took the new footbridge straight away.',
+      'The lesson: the picture in your head - your <i>mental model</i> - can be out of date. When what you see disagrees with it, believe what you see and update the picture.'
     ]
   },
   recognise: {
-    q: 'Three of these are someone following an out-of-date map. Which is the odd one out?',
+    q: 'Which one is NOT an out-of-date mental model?',
     choices: [
-      'You are sure a friend is still annoyed about last month, so you avoid them - they forgot about it weeks ago.',
-      'A company keeps advertising to young professionals because that was its customer ten years ago; its buyers are now mostly retired.',
-      'A driver keeps taking a route to work that was quick before a new estate was built along it.',
+      'You avoid a friend because you think they\'re still upset - they got over it weeks ago.',
+      'A company keeps advertising to young professionals, but its customers are now mostly retired.',
+      'You keep taking a route to work that used to be quick, before new roadworks started.',
       'A shower goes scalding two turns after you turned it up, because the hot water was still in the pipe.'
     ],
     odd: 3,
-    right: 'The shower is the odd one. Your picture of the shower was fine - the result just arrived late. That is level 3, <b class="nolink">Delays</b>.',
+    right: 'Right. The shower is a result arriving late - level 3, <b class="nolink">Delays</b>.',
     wrong: [
-      'That is an out-of-date map. Your picture of the friendship stopped updating a month ago; the friendship did not.',
-      'That is the pattern. The customer in the company\'s head was accurate once. Nobody went outside to check.',
-      'That is the pattern, almost word for word. The ground changed and the habit did not.',
+      'That one IS an old mental model: your picture of the friendship didn\'t update.',
+      'That one IS an old mental model: the company never checked who its customers are now.',
+      'That one IS an old mental model: the road changed and your habit didn\'t.',
       ''
     ]
   }
@@ -991,36 +959,33 @@ const vibe = {
   },
   debrief: {
     bad: [
-      `Lots shipped, and a bug pile that ended the week bigger than your feature list. The autopilot features looked free, but their bugs turned up two days later - and every time you let the agent loop on the bug list without tests, it fixed some and quietly made most of them back.`,
-      `Nearly everyone works this way with an agent, because shipping is instant and visible and the bugs are late and quiet. It is the slow shower again: by the time the reports arrive, you have shipped two more features the same way.`,
-      `The idea: an app is a system, so the same shapes apply. Bugs are a stock. A feature's bugs arrive after a delay. An agent fixing its own work with nothing checking it is a reinforcing loop - and tests are what turn it into a balancing loop.`
+      'Lots shipped, but bugs piled up. Autopilot bugs showed up two days later, and the agent loop without tests created new bugs while fixing old ones.',
+      'The lesson: your app follows the same rules as everything else. Bugs are a stock, bug reports arrive after a delay, and an AI agent fixing its own code without tests is a reinforcing loop. Tests turn it into a balancing loop.'
     ],
     mid: [
-      `A reasonable week: some features, some bugs, nothing on fire. You probably mixed quick autopilot days with clean-up days, which keeps the pile level without shrinking it.`,
-      `What moves it from fine to good is the thing that feels slowest: tests first. They cost more tokens today and make every later feature and every agent loop cheaper.`,
-      `The idea: an app is a system, so the same shapes apply. Bugs are a stock. A feature's bugs arrive after a delay. An agent fixing its own work with nothing checking it is a reinforcing loop - and tests are what turn it into a balancing loop.`
+      'A fine week: features shipped and the bug count stayed about level, but it didn\'t shrink. Writing tests first would have helped.',
+      'The lesson: your app follows the same rules as everything else. Bugs are a stock, bug reports arrive after a delay, and an AI agent fixing its own code without tests is a reinforcing loop. Tests turn it into a balancing loop.'
     ],
     good: [
-      `Four or more features and a small bug pile. You kept the pile from growing while you shipped - and if you let the agent loop, you had tests in place first, so its fixes stuck.`,
-      `It feels slower on day one and faster by day five, which is why most people skip it: day one is the only day you can see.`,
-      `The idea: an app is a system, so the same shapes apply. Bugs are a stock. A feature's bugs arrive after a delay. An agent fixing its own work with nothing checking it is a reinforcing loop - and tests are what turn it into a balancing loop.`
+      'Four or more features and only a few bugs. Tests kept the bug pile under control.',
+      'The lesson: your app follows the same rules as everything else. Bugs are a stock, bug reports arrive after a delay, and an AI agent fixing its own code without tests is a reinforcing loop. Tests turn it into a balancing loop.'
     ]
   },
   recognise: {
-    q: 'Three of these are a loop feeding itself, like the agent fixing its own bugs. Which is the odd one out?',
+    q: 'Which one is NOT a loop feeding itself?',
     choices: [
-      'An agent "fixes" a failing test by editing the test, which breaks two others, which it then "fixes" the same way.',
-      'A new feature\'s bug reports only start arriving two days after you ship it.',
-      'Each quick patch to messy code makes the code messier, so the next patch is quicker and dirtier still.',
-      'The longer the bug list in the agent\'s context, the more each fix costs and the sloppier it gets, so the list grows.'
+      'An agent \'fixes\' a failing test by editing the test, which breaks two others, which it \'fixes\' the same way.',
+      'Bug reports for a new feature only start arriving two days after you ship it.',
+      'Each quick patch makes the code messier, so the next patch is even quicker and messier.',
+      'The longer the bug list in the agent\'s context, the worse each fix gets, so the list keeps growing.'
     ],
     odd: 1,
-    right: 'The late bug reports are the odd one. Nothing is feeding itself there - the result is just arriving late. That is the slow shower from level 3, <b class="nolink">Delays</b>.',
+    right: 'Right. Bug reports arriving late is a delay - level 3, <b class="nolink">Delays</b>.',
     wrong: [
-      'That is a loop feeding itself. Every "fix" creates the next thing to fix, and nothing outside the loop is checking.',
+      'That one IS a loop feeding itself: each fix creates the next problem.',
       '',
-      'That is the pattern. Mess makes quick patches, and quick patches make mess.',
-      'That is the pattern. More bugs make worse fixes, and worse fixes make more bugs.'
+      'That one IS a loop feeding itself: mess causes quick patches, which cause more mess.',
+      'That one IS a loop feeding itself: more bugs make worse fixes, which make more bugs.'
     ]
   }
 };
@@ -1036,27 +1001,36 @@ export const systems = {
   time: '~60 min',
   lead: 'Start here. GitGames teaches you how to think before it teaches you the tools.',
   terms: 'own',
-  desc: 'Twelve small games about why things go wrong on their own - slow showers, overflowing baths, rumours, shared fridges. Play first, then find out what you just did.',
+  desc: 'Twelve simple ideas about how things work - why showers overshoot, rumours explode and shared fridges run empty. Each one explained plainly, then tried out in a quick game.',
   chapters: [
     {
       title: 'Chapter 1 - How things add up',
-      desc: 'Wholes, piles, and things that arrive late.',
+      desc: 'Groups, piles, and results that arrive late.',
       nodes: [
         {
           id: 'st-01', name: 'Parts vs the whole', ico: '⚽',
           steps: [
-            L('Eleven stars, no team', [
-              { p: 'Every few years a football club spends a fortune buying the best player it can find for every position. Sometimes it wins everything. Quite often it finishes fifth, and nobody can quite say why.' },
-              { p: 'Every player is brilliant. Put them on the same pitch and something goes missing. Two of them want every free kick. Nobody wants to do the boring running. The keeper and the defenders have never learned how each other think.' }
+            L('What it means', [
+              { p: 'A team, a band or a group project is more than a list of its members. How well the parts work together matters more than how good each part is on its own.' },
+              { ul: [
+                'A team of star players who all want the ball can lose to a team of average players who work together.',
+                'A group project with four brilliant people can fail if nobody does the job of pulling it together.',
+                'The best ingredients don\'t make a good meal if they don\'t go together.'
+              ] },
+              { call: { k: 'tip', t: 'The word:', p: 'This is called emergence - the whole behaves differently from the parts.' } }
             ]),
-            L('"On paper, we should win"', [
-              { p: 'Listen to fans after a bad season and you will hear the same phrase: <strong>on paper</strong>. On paper, this was the best squad in the league. On paper, we should have walked it.' },
-              { p: 'On paper means: add up how good each player is. It is a real number, and it is easy to work out. The question is whether it is the number that decides the games.' }
+            L('What to look for', [
+              { p: 'When something isn\'t working, don\'t only ask "which part is weak?" Ask how the parts fit together.' },
+              { ul: [
+                'Is every job covered?',
+                'Are too many people trying to do the same job?',
+                'Is there a gap between the parts that nobody owns?'
+              ] }
             ]),
-            L('Your turn', [
-              { p: 'You are picking a team of six: a keeper, two defenders, two midfielders and a striker. Each turn one role comes up and three players are free. Each has a rating out of 100.' },
-              { p: 'The big number is your team\'s rating on paper - the total of everyone you have picked. After six picks, the season plays itself.' },
-              { call: { k: 'tip', t: 'No trick.', p: 'Pick however you like. There is no wrong way to play - only a way to find out.' } }
+            L('The game', [
+              { p: 'Pick a team of six, one position at a time. Each player has a rating out of 100.' },
+              { p: 'The big number adds up the ratings - but that\'s not what wins games. What wins is players who fit their position, and not too many who all want the ball.' },
+              { call: { k: 'tip', t: 'Goal:', p: 'Win at least 8 of 10 games.' } }
             ], 'Pick the team →'),
             football
           ]
@@ -1064,17 +1038,25 @@ export const systems = {
         {
           id: 'st-02', name: 'Stocks and flows', ico: '🛁',
           steps: [
-            L('The bath you forgot about', [
-              { p: 'You start running a bath, go to answer a message, and come back to a flood. The tap was not on full. It did not need to be. It only needed to pour in faster than the plug hole let out, for long enough.' },
-              { p: 'Here is the odd thing about a bath: how much water is in it tells you nothing about how fast the tap is running right now. A tub can be nearly empty with the tap on full, or nearly full with the tap off.' }
+            L('What it means', [
+              { p: 'A stock is an amount of something that builds up over time. A flow is what adds to it or takes away from it.' },
+              { ul: [
+                'Water in a bath (stock) - the tap and the drain (flows).',
+                'Money in your account (stock) - your pay and your spending (flows).',
+                'Emails in your inbox (stock) - new emails and the ones you answer (flows).'
+              ] }
             ]),
-            L('What you can and cannot see', [
-              { p: 'You can see the water. You can hear the tap. The plug hole is harder: it drains quietly, and you only notice it when it gets slower - a bit of hair, a bit of soap, and suddenly it is taking less than it did.' },
-              { p: 'And the tap is not only yours. Someone runs the kitchen sink and your pressure drops, without anyone telling you.' }
+            L('The rule', [
+              { p: 'A stock only changes by flow in minus flow out. If more comes in than goes out, it keeps rising every turn - even if it looks fine right now.' },
+              { ul: [
+                'Tap pours 10, drain takes 4: the bath gains 6 every turn.',
+                'Earn $2,000, spend $2,100: your savings drop $100 every month.'
+              ] },
+              { call: { k: 'tip', t: 'So:', p: 'To keep a stock steady, make in and out equal.' } }
             ]),
-            L('Your turn', [
-              { p: 'Keep the bath between the two lines - 40 to 70 litres - for eight turns. Each turn you can nudge the tap up or down, open or close the drain, or leave it.' },
-              { p: 'The big number is the water in the tub. Under it: how much is coming in and going out each turn. Things will happen to the plumbing. Things always happen to the plumbing.' }
+            L('The game', [
+              { p: 'Keep the bath between 40 and 70 litres for 8 turns. Each turn you can change the tap or the drain, or leave it.' },
+              { p: 'Watch the in and out numbers under the water level. Things will change during the game - the drain gets clogged, the water pressure drops.' }
             ], 'Run the bath →'),
             bathtub
           ]
@@ -1082,18 +1064,22 @@ export const systems = {
         {
           id: 'st-03', name: 'Delays', ico: '🚿',
           steps: [
-            L('The hotel shower', [
-              { p: 'You step into a hotel shower. It is freezing. You turn the handle towards hot. Still freezing. You turn it more. Still freezing. You turn it a lot more.' },
-              { p: 'Then the scalding water arrives, all at once, and you are flat against the tiles turning it back the other way. And then it goes freezing again.' }
+            L('What it means', [
+              { p: 'A delay is a gap between doing something and seeing the result.' },
+              { p: 'A shower is the classic example. When you turn the handle, the water you feel was already in the pipe, so the change reaches you a little later.' },
+              { ul: [
+                'You eat, but only feel full 20 minutes later.',
+                'You start working out, but see results weeks later.',
+                'You turn up the radiator, but the room warms up an hour later.'
+              ] }
             ]),
-            L('Where the water is', [
-              { p: 'The handle is right there in your hand. The boiler is somewhere in the basement. Between them is a long pipe, full of water that was set to some temperature a little while ago.' },
-              { p: 'Whatever you do to the handle has to push all that old water out of the way before you feel it. Your skin only ever reads the water that is already on it.' }
+            L('Why delays cause trouble', [
+              { p: 'When the result is late, it\'s easy to think your first change didn\'t work, so you do more. Then everything arrives at once and you overshoot.' },
+              { call: { k: 'tip', t: 'So:', p: 'Make one change, then wait long enough to see its effect before changing again.' } }
             ]),
-            L('Your turn', [
-              { p: 'Ten turns. Keep the water on your back between 36 and 40 degrees - the green band. Each turn you can turn the handle a lot, a bit, or leave it.' },
-              { p: 'The big number is what you feel right now. Under it, the dial shows where the handle is pointing.' },
-              { call: { k: 'tip', t: 'Take your time.', p: 'Nobody is timing you. The water is.' } }
+            L('The game', [
+              { p: 'Keep the shower between 36 and 40 degrees for 10 turns. Each turn, turn the handle a lot, a bit, or leave it.' },
+              { p: 'Changes take two turns to reach you. The dial under the temperature shows where the handle is set - that\'s where the water is heading.' }
             ], 'Get in →'),
             shower
           ]
@@ -1102,21 +1088,27 @@ export const systems = {
     },
     {
       title: 'Chapter 2 - Loops',
-      desc: 'Things that settle, and things that snowball.',
+      desc: 'Things that settle down, and things that snowball.',
       nodes: [
         {
           id: 'st-04', name: 'Balancing loops', ico: '🌡️',
           steps: [
-            L('The flat that fights back', [
-              { p: 'Your flat is cold, so you put the heater on full. An hour later you are in a T-shirt with the window open. An hour after you switch it off you are back in a jumper. Nothing seems to settle.' },
-              { p: 'Next door has an old thermostat on the wall, set to 21. The flat is 21 all winter. The thermostat is not clever. It does one boring thing, over and over.' }
+            L('What it means', [
+              { p: 'A balancing loop is anything that pushes back toward a target.' },
+              { ul: [
+                'A thermostat: too cold, the heat comes on; warm enough, it goes off.',
+                'Your body: too hot, you sweat; too cold, you shiver.',
+                'Hunger: you get hungry when you\'re low on food, and stop when you\'ve eaten.'
+              ] }
             ]),
-            L('Heat leaks', [
-              { p: 'A warm room is always losing heat - through the windows, the walls, the gap under the door. A radiator takes a while to get hot after you switch it on, and it stays hot for a while after you switch it off.' }
+            L('How it behaves', [
+              { p: 'A balancing loop pushes hard when you\'re far from the target and gently when you\'re close, so things settle down.' },
+              { p: 'The catch: if there\'s a delay - like a radiator that takes time to heat up and cool down - switching hard on and off makes you overshoot.' },
+              { call: { k: 'tip', t: 'So:', p: 'Pick the right setting and let it settle.' } }
             ]),
-            L('Your turn', [
-              { p: 'Ten turns. Keep the room between 20 and 22 degrees. Each turn, set the heater to high, low or off.' },
-              { p: 'The big number is the room. Under it: what the heater is set to, and how hot the radiator itself feels.' }
+            L('The game', [
+              { p: 'Keep the room between 20 and 22 degrees for 10 turns. Each turn, set the heater to high, low or off.' },
+              { p: 'The room loses heat faster the warmer it gets. Low settles at about 21 on its own, but slowly. High is fast, but the radiator stays hot after you switch it off.' }
             ], 'Turn the heating on →'),
             thermostat
           ]
@@ -1124,17 +1116,22 @@ export const systems = {
         {
           id: 'st-05', name: 'Reinforcing loops', ico: '📣',
           steps: [
-            L('How a school finds out', [
-              { p: 'On Monday, one person knows who kissed who at the party. By Friday the whole school knows, including three teachers and the bus driver. Nobody made an announcement. Each person just told a couple of others.' },
-              { p: 'The strange part: for most of the week, almost nobody knew. On Wednesday it could still have stayed quiet. By Thursday it was far too late.' }
+            L('What it means', [
+              { p: 'A reinforcing loop is when more of something leads to even more of it.' },
+              { ul: [
+                'A rumour: everyone who hears it tells more people.',
+                'Savings: interest earns more interest.',
+                'Debt: interest makes the debt bigger, which makes more interest.',
+                'A viral post: more views bring more shares, which bring more views.'
+              ] }
             ]),
-            L('Now it is your gig', [
-              { p: 'Your band has a gig on Saturday. The room holds 150 and you need at least 100 there to cover the hire. No posters, no ads. Just people telling people.' },
-              { p: 'You have one person on side: you.' }
+            L('How it behaves', [
+              { p: 'It starts slow, then explodes. If something triples every day, it goes 1, 3, 9, 27, 81, 243. It looks tiny for days, then it\'s suddenly huge.' },
+              { call: { k: 'tip', t: 'So:', p: 'Act early, while the numbers still look small.' } }
             ]),
-            L('Your turn', [
-              { p: 'Eight days. Each day, decide how many friends everyone who has heard should tell: none, one or two. Everyone does what you ask.' },
-              { p: 'The big number is how many people have heard. Get it between 100 and 150 by Saturday.' }
+            L('The game', [
+              { p: 'Your band has a gig. The room holds 150 people and you need at least 100.' },
+              { p: 'Each day for 8 days, choose how many friends everyone who\'s heard should tell: none, one or two. Get between 100 and 150 by the end.' }
             ], 'Start talking →'),
             rumour
           ]
@@ -1143,21 +1140,26 @@ export const systems = {
     },
     {
       title: 'Chapter 3 - Good people, bad results',
-      desc: 'Nobody is the villain. The shape is.',
+      desc: 'When sensible choices add up to a bad outcome.',
       nodes: [
         {
           id: 'st-06', name: 'Bounded rationality', ico: '🍸',
           steps: [
-            L('A good job', [
-              { p: 'You work behind a bar. The owner pays you a bonus on every drink you sell. Seems fair: more drinks, more money for everyone.' },
-              { p: 'The regulars - people who come in three nights a week, tip well and bring their friends - are why the bar pays its rent. They are not on the till screen.' }
+            L('What it means', [
+              { p: 'Bounded rationality means people make sensible choices based on what they can see and what they\'re rewarded for - but they can\'t see the whole picture. So good people can make things worse without meaning to.' },
+              { ul: [
+                'Staff paid per sale push deals customers don\'t need, and customers stop coming back.',
+                'A call centre judged on short calls rushes callers, who then call back.',
+                'A school judged on test scores only teaches the test.'
+              ] }
             ]),
-            L('The view from behind the bar', [
-              { p: 'From where you stand you can see tonight: who is thirsty, what is on the till, how busy it is. You cannot see next month.' },
-              { p: 'Nobody at this bar is trying to wreck it. Everyone is doing the sensible thing for where they stand.' }
+            L('What to do about it', [
+              { p: 'When people keep making a bad choice, look at what they\'re rewarded on and what they can see.' },
+              { call: { k: 'tip', t: 'So:', p: 'Change the reward, or show people the bigger picture, and their choices change.' } }
             ]),
-            L('Your turn', [
-              { p: 'Eight nights. Each night, choose how you run the bar. The big number is the drinks you sold that night - the number your bonus is paid on. Under it: how many regulars came in.' }
+            L('The game', [
+              { p: 'You\'re a bartender paid a bonus for every drink you sell. For 8 nights, choose how to run the bar.' },
+              { p: 'The big number is drinks sold - your bonus. Also keep an eye on the regulars. They\'re what keeps the bar in business.' }
             ], 'Open up →'),
             bartender
           ]
@@ -1165,16 +1167,21 @@ export const systems = {
         {
           id: 'st-07', name: 'Fixes that fail', ico: '🏷️',
           steps: [
-            L('The slow Tuesday', [
-              { p: 'You run a café. Fridays are rammed. Tuesdays are dead. A friend says: run a Tuesday deal, 40% off. Easy win.' },
-              { p: 'The first Tuesday is great - a queue out of the door. You feel very clever.' }
+            L('What it means', [
+              { p: 'Fixes that fail are quick solutions that help now but make the problem worse later - so you need them again and again.' },
+              { ul: [
+                'Discounts bring customers now, but teach them to wait for discounts.',
+                'Borrowing to pay a bill fixes today and makes a bigger bill later.',
+                'Widening a road eases traffic, until more people start driving on it.'
+              ] }
             ]),
-            L('Customers remember', [
-              { p: 'Customers are not furniture. They notice what you did last week and they plan around it. So do you, when you shop.' }
+            L('How to spot it', [
+              { p: 'Before a quick fix, ask: what will this cause in a few weeks?' },
+              { call: { k: 'tip', t: 'So:', p: 'If the fix has a side effect that brings the problem back, look for a slower fix that deals with the cause.' } }
             ]),
-            L('Your turn', [
-              { p: 'Eight weeks. Each week, run the Tuesday deal, skip it, or spend the week building a proper lunch menu - which costs money now and takes a week to catch on.' },
-              { p: 'The big number is what you took this week. A normal week is $1,600.' }
+            L('The game', [
+              { p: 'You run a café. Tuesdays are quiet. A normal week makes $1,600.' },
+              { p: 'For 8 weeks, choose: run a 40%-off Tuesday, skip it, or spend money on a better lunch menu (it costs you this week and pays off from next week). The big number is what you take each week.' }
             ], 'Open the café →'),
             promo
           ]
@@ -1182,16 +1189,21 @@ export const systems = {
         {
           id: 'st-08', name: 'Shifting the burden', ico: '💊',
           steps: [
-            L('Another morning', [
-              { p: 'You wake up with a headache. Again. There is a packet of painkillers by the bed. Twenty minutes later it is gone and your day is fine.' },
-              { p: 'It is the third time this week. But it is fine. The pills work.' }
+            L('What it means', [
+              { p: 'Shifting the burden is when a quick fix treats the symptom, so you stop fixing the real cause - and the real cause gets worse.' },
+              { ul: [
+                'Painkillers for headaches that come from bad sleep.',
+                'Coffee to get through the day instead of fixing your sleep.',
+                'Always getting the same expert to fix a problem, so nobody else learns how.'
+              ] }
             ]),
-            L('What is underneath', [
-              { p: 'Headaches like this usually come from something piling up: short nights, not enough water, a phone in your face until one in the morning. None of that clears in twenty minutes. It takes a few days of the boring thing before you notice anything.' }
+            L('Why it\'s a trap', [
+              { p: 'The quick fix works, so it feels like the problem is handled. Meanwhile the cause grows, and you rely on the quick fix more and more.' },
+              { call: { k: 'tip', t: 'So:', p: 'Use the quick fix if you need it, but fix the cause too.' } }
             ]),
-            L('Your turn', [
-              { p: 'Eight mornings. Each day pick one thing: a painkiller, an early night, a big glass of water, or screens off at ten.' },
-              { p: 'The big number is how bad your head feels today, out of 10. Under it: how bad it was when you woke up.' }
+            L('The game', [
+              { p: 'Eight mornings with a headache. Each day pick one: a painkiller, an early night, a glass of water, or screens off at ten.' },
+              { p: 'The big number is how bad your head feels today, out of 10. Painkillers work fast but can cause rebound headaches. Sleep, water and screens-off work slowly.' }
             ], 'Wake up →'),
             headache
           ]
@@ -1199,16 +1211,17 @@ export const systems = {
         {
           id: 'st-09', name: 'Tragedy of the commons', ico: '🧊',
           steps: [
-            L('The shared fridge', [
-              { p: 'Four of you share a flat and a fridge. Everyone puts money in a kitty and whoever is around does the shop. At first it is lovely: the fridge is full, and nobody counts.' },
-              { p: 'Then someone notices the good yoghurts go fast. If they do not grab one today, someone else will.' }
+            L('What it means', [
+              { p: 'A commons is something shared that nobody owns - a shared fridge, a park, fish in the sea, a group chat.' },
+              { p: 'The tragedy of the commons: taking a bit extra makes sense for each person, but when everyone does it, the shared thing runs out.' }
             ]),
-            L('The kitty', [
-              { p: 'The kitty works as long as people believe in it. When the fridge is full, everyone chips in happily. When it is half-empty every time you open it, people start buying their own food and hiding it in their rooms - and nobody pays in for a fridge they never get anything out of.' }
+            L('What helps', [
+              { p: 'Shared things last when people agree on a fair share and can see what others are doing.' },
+              { call: { k: 'tip', t: 'Remember:', p: 'People copy what they see, so your behaviour sets the norm.' } }
             ]),
-            L('Your turn', [
-              { p: 'Eight days. Each day choose how much you take: one portion, two, or three. Your housemates see what you took and do the same the next day. Two each is about what the nightly shop can keep up with.' },
-              { p: 'The big number is what is left in the fridge.' }
+            L('The game', [
+              { p: 'Four housemates share one fridge. For 8 days, take one, two or three portions a day. Your housemates copy what you took the day before.' },
+              { p: 'Two each is what the nightly shop can keep up with. If the fridge gets low, people stop paying into the shopping kitty.' }
             ], 'Open the fridge →'),
             fridge
           ]
@@ -1222,16 +1235,21 @@ export const systems = {
         {
           id: 'st-10', name: 'Leverage points', ico: '☕',
           steps: [
-            L('The struggling café', [
-              { p: 'A little coffee shop on a side street sells about 300 coffees a week. It is not enough. The owner has a list of ideas: cheaper prices, new cups, longer hours, Instagram, oat milk, remembering people\'s names.' },
-              { p: 'She has the energy for three of them. Just three.' }
+            L('What it means', [
+              { p: 'A leverage point is a place where a small change makes a big difference.' },
+              { p: 'Most changes only nudge things once. The powerful ones change how something grows.' },
+              { ul: [
+                'Saving 10% of every paycheck, instead of one big deposit once.',
+                'A café remembering customers\' names, so they come back and bring friends, instead of a one-off discount.'
+              ] }
             ]),
-            L('Where customers come from', [
-              { p: 'Some customers are walk-ins: they pass by, they fancy a coffee, they come in. Others are regulars: they come most days, five coffees a week, and now and then they bring a friend.' }
+            L('Timing matters', [
+              { p: 'A change that affects growth gets stronger over time.' },
+              { call: { k: 'tip', t: 'So:', p: 'The earlier you make it, the bigger the effect.' } }
             ]),
-            L('Your turn', [
-              { p: 'Eight weeks, three pushes. Each week a few ideas are on the table; pick one, or let the week run. Once you have used three, you are done tinkering.' },
-              { p: 'The big number is coffees sold this week.' }
+            L('The game', [
+              { p: 'A coffee shop sells 300 coffees a week. There are six ideas, and you can use three of them over 8 weeks.' },
+              { p: 'Most ideas add a few customers once. One changes how the shop grows. Find it and use it early.' }
             ], 'Unlock the door →'),
             coffee
           ]
@@ -1239,16 +1257,21 @@ export const systems = {
         {
           id: 'st-11', name: 'Mental models', ico: '🗺️',
           steps: [
-            L('The confident map', [
-              { p: 'You are meeting a friend at a café across the river. The map on your phone shows the route: straight up, over the bridge, café on the corner. Easy.' },
-              { p: 'The map is confident. The map is also three months old.' }
+            L('What it means', [
+              { p: 'A mental model is the picture in your head of how something works - like a map. It helps you, but it can be wrong or out of date.' },
+              { ul: [
+                'You think a friend is still upset, but they\'ve moved on.',
+                'A company markets to the customers it had ten years ago.',
+                'You take a route that used to be fast, before the roadworks.'
+              ] }
             ]),
-            L('What you can see', [
-              { p: 'Standing in the street, you can see what is right around you: the corner, the next block, the river bank when you reach it. Everything further away, you only know from the map.' }
+            L('How to stay up to date', [
+              { p: 'When something surprises you, that\'s a sign your picture is wrong somewhere.' },
+              { call: { k: 'tip', t: 'So:', p: 'When what you see disagrees with what you expected, believe what you see and update the picture.' } }
             ]),
-            L('Your turn', [
-              { p: 'Get to the café in ten moves or fewer. Squares next to you show what is really there - bright. Everything else shows what the map says - faded.' },
-              { p: 'The big number is how many blocks you are from the café, as the crow flies. Walk into something and you lose the move.' }
+            L('The game', [
+              { p: 'Walk to the café in 10 moves or fewer.' },
+              { p: 'Faded squares show what the map says. The bright squares around you show what\'s really there. The map is out of date.' }
             ], 'Head out →'),
             mapwalk
           ]
@@ -1256,17 +1279,22 @@ export const systems = {
         {
           id: 'st-12', name: 'Your app is a system', ico: '🤖',
           steps: [
-            L('A week of shipping', [
-              { p: 'You are building an app with an AI agent. It is Monday. You have a list of features, a budget of tokens, and a small pile of bugs.' },
-              { p: 'The agent is fast. Ask for a feature and you get one in minutes. It feels like cheating.' }
+            L('Same ideas, in your app', [
+              { p: 'Everything in this track shows up when you build software with AI.' },
+              { ul: [
+                'Bugs are a stock: they pile up when they arrive faster than you fix them.',
+                'Bug reports come after a delay: users find a feature\'s bugs a few days after you ship it.',
+                'An AI agent fixing its own code with no tests is a reinforcing loop: its fixes can create new bugs, which it then tries to fix.',
+                'Tokens are a flow: every prompt costs some, and a long bug list makes each prompt bigger.'
+              ] }
             ]),
-            L('Same shapes, new room', [
-              { p: 'You have met every piece of this already. Open bugs are a stock, like water in the tub. Users take a couple of days to find the bugs in a new feature - a delay, like the shower. And an agent fixing its own bugs with nothing checking its work can make new ones as fast as it fixes old ones: a reinforcing loop.' },
-              { p: 'Tokens are a flow: every prompt spends some, and a long bug list makes every prompt longer.' }
+            L('What helps', [
+              { p: 'Tests turn the agent loop into a balancing loop. They catch bad fixes before they pile up.' },
+              { call: { k: 'tip', t: 'The trade:', p: 'Tests are slower today and faster for the rest of the week.' } }
             ]),
-            L('Your turn', [
-              { p: 'Eight days. Each day pick one: ship a feature on autopilot, write tests and then ship, fix bugs by hand, or let the agent loop on the bug list.' },
-              { p: 'The big number is open bugs. Aim to ship at least four features and finish with three bugs or fewer - counting the reports already on their way.' }
+            L('The game', [
+              { p: 'Eight days. Each day, choose one: ship a feature on autopilot, write tests then ship, fix bugs by hand, or let the agent loop on the bugs.' },
+              { p: 'Goal: at least 4 features, and 3 bugs or fewer at the end - counting the reports still on their way.' }
             ], 'Open the laptop →'),
             vibe
           ]

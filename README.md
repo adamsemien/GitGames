@@ -12,7 +12,7 @@ Build real commands by **tapping tokens or typing them** — the two are interch
 
 | Track | Levels | What it covers |
 |---|---|---|
-| 🌀 **Systems Thinking** | 12 | Start here. How to think before the tools: parts vs the whole, stocks and flows, delays, balancing and reinforcing loops, bounded rationality, fixes that fail, shifting the burden, the commons, leverage points, mental models - and your app as a system. Every level is a small game you play before anything is explained |
+| 🌀 **Systems Thinking** | 12 | Start here. How to think before the tools: parts vs the whole, stocks and flows, delays, balancing and reinforcing loops, bounded rationality, fixes that fail, shifting the burden, the commons, leverage points, mental models - and your app as a system. Every level explains one idea plainly, then lets you try it in a quick game |
 | 🐙 **Git & GitHub** | 34 | Repos, the three areas, commits, HEAD, undo, reflog, branches, merges, conflicts, remotes, forks, PRs, merge strategies, Actions, rebase, interactive rebase, cherry-pick, stash, bisect, worktrees, tags, submodules |
 | 🌐 **APIs & Webhooks** | 13 | What an API is, HTTP verbs, status codes, headers, JSON, curl, API keys vs bearer tokens vs OAuth, rate limits and backoff, idempotency, webhooks as inversion of control, signature verification, the raw-body trap, local tunnelling |
 | 🔧 **Tooling** | 12 | Runtime vs package manager vs bundler, package.json, lockfiles, semver, linters/formatters/typecheckers, tests as a contract, what "build" does — plus the agent's own tools, permission modes and blast radius |
@@ -31,7 +31,7 @@ Ghostty content is verified against Ghostty 1.3.1 defaults (`ghostty +show-confi
 - **Lesson** — the concept, with SVG diagrams and terminal output. Any glossary term is auto-linked; tap it for a definition without losing your place.
 - **Build** — assemble a real command. Tap the tokens, or type it: `Space` commits a token, `Tab` autocompletes, `Enter` runs. Mix both freely. Wrong answers shake, then hint, then reveal.
 - **Quiz** — a check with an explanation of *why*, not just *what*
-- **Simulate** - a small turn-based game you play *before* the idea is explained: a shower that answers two turns late, a bath with a clogging drain, a rumour you can only steer early. After the last turn you get two numbers, a debrief matched to how you did, and a "same shape, different room" question. Review brings back only that question, never the game
+- **Simulate** - a small turn-based game where you try out the idea the lesson just explained: a shower that answers two turns late, a bath with a clogging drain, a rumour you have to slow down early. After the last turn you get two numbers, a short debrief matched to how you did, and a "spot it in real life" question. Review brings back only that question, never the game
 
 - **Test out** — already know it? Skip the lessons and prove it. Every section header has a **⚡ Test out** button, and any lesson offers the same for its own level until you answer the first check. You get that level's or that section's checks with the lessons stripped out and *one attempt per question* — no hints, no retries. Clear the pass mark — 80% of the questions, rounded up, so a short test has to be perfect — and every level it covered clears at once; fail and you lose nothing but the shortcut — the misses land in Review and you play that one through. Keystroke levels are muscle memory rather than knowledge, so no question comes from them — passing the section still marks them off, and they are still there to play.
 
