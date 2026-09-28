@@ -12,9 +12,12 @@
    { t:'quiz',   q, choices:[...], a:<index>, why }
    { t:'build',  brief, answer:[tokens], chips:[decoys], why, hint?, hint2? }
    { t:'keys',   goal, line, cursor?, target:{line,cursor?}, par, keys:[labels], reveal, why, hint? }
+   { t:'sim',    title, brief, turns, init(), actions, step(), view(), score(), over()?,
+                 debrief:{bad,mid,good}, recognise:{q,choices,odd,right,wrong} }  - see data/systems.js
 
    Node ids must be unique across ALL tracks — they key saved progress.
    ============================================================ */
+import { systems } from './systems.js';
 import { terminal } from './terminal.js';
 import { ground } from './ground.js';
 import { github } from './github.js';
@@ -27,4 +30,4 @@ import { tooling } from './tooling.js';
 import { harness } from './harness.js';
 import { debugging } from './debugging.js';
 
-export const TRACKS = [terminal, github, ground, apis, tooling, harness, claudeCode, codex, ghostty, vibe, debugging];
+export const TRACKS = [systems, terminal, github, ground, apis, tooling, harness, claudeCode, codex, ghostty, vibe, debugging];

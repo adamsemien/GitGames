@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>GitGames - Simulate tests</title>
+<link rel="icon" href="../icon.svg" type="image/svg+xml" />
+<style>
+  :root{--bg:#07070d;--txt:#eef0ff;--dim:#9599bd;--ok:#7cff7c;--bad:#ff5c6e}
+  body{margin:0;padding:16px;background:var(--bg);color:var(--txt);font:14px/1.5 ui-monospace,Menlo,monospace}
+  h1{font-size:18px;margin:0 0 4px} p{color:var(--dim);margin:0 0 14px}
+  #sum{font-weight:800;margin-bottom:12px} .ok{color:var(--ok)} .bad{color:var(--bad)}
+  li{margin:2px 0;word-break:break-word} ul{padding-left:18px} small{display:block;color:var(--bad)}
+</style>
+</head>
+<body>
+<h1>Simulate tests</h1>
+<p>Replays every Systems Thinking game through fixed action lists and checks the shape of each level. Same checks as <code>node tests/sim.test.mjs</code>. Serve the repo root and open <code>/tests/sim.html</code>.</p>
+<div id="sum">Running…</div>
+<ul id="out"></ul>
+<script type="module">
+  import { runAll } from './sim-cases.js';
+  const res = runAll();
+  const failed = res.filter(r => !r.pass);
+  const sum = document.getElementById('sum');
+  sum.textContent = `${res.length - failed.length} passed, ${failed.length} failed`;
+  sum.className = failed.length ? 'bad' : 'ok';
+  const out = document.getElementById('out');
+  res.forEach(r => {
+    const li = document.createElement('li');
+    li.className = r.pass ? 'ok' : 'bad';
+    li.textContent = (r.pass ? '✓ ' : '✗ ') + r.name;
+    if (!r.pass) { const s = document.createElement('small'); s.textContent = r.error; li.appendChild(s); }
+    out.appendChild(li);
+  });
+  document.title = (failed.length ? '✗ ' : '✓ ') + document.title;
+  window.__simTests = { total: res.length, failed: failed.length };
+</script>
+</body>
+</html>

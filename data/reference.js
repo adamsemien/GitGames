@@ -8,6 +8,24 @@
 
 export const GLOSSARY = [
   {
+    // track: 'systems' keeps these ordinary-English words from linking in other tracks.
+    group: 'Systems thinking',
+    items: [
+      { term: 'Emergence', also: ['emergent'], track: 'systems', def: 'When a whole does something none of its parts do on their own. A team of stars that plays badly, or a crowd that forms a queue nobody organised.' },
+      { term: 'Stock', also: ['stocks'], track: 'systems', def: 'Anything that piles up or drains away over time - a balance, a reservoir, a backlog. Water in a bath, money in an account, emails in an inbox.' },
+      { term: 'Flow', also: ['flows'], track: 'systems', def: 'The rate something fills or drains a stock. The tap and the plug hole; your pay and your spending. A stock only changes by in minus out.' },
+      { term: 'Delay', also: ['delays'], track: 'systems', def: 'The gap between doing something and seeing its result. The hotel shower that goes scalding two turns after you turned it up.' },
+      { term: 'Balancing loop', also: ['balancing loops'], track: 'systems', def: 'A loop that pulls something back towards a goal, pushing less as the gap closes. A thermostat, your hunger, a shop nudging prices until stock lasts the day.' },
+      { term: 'Reinforcing loop', also: ['reinforcing loops'], track: 'systems', def: 'A loop where more brings more, so it creeps and then explodes. A rumour, compound interest, a debt growing on its own interest.' },
+      { term: 'Bounded rationality', track: 'systems', def: 'Sensible choices made from a view that is too small. A bartender paid per drink sells drinks, and the regulars quietly stop coming.' },
+      { term: 'Fixes that fail', track: 'systems', def: 'A quick fix that works now and makes the problem worse later, so you need it again. The Tuesday promo that trains Friday customers to wait for deals.' },
+      { term: 'Shifting the burden', track: 'systems', def: 'A quick fix for the symptom takes the pressure off fixing the cause, which gets worse. Painkillers for a headache caused by short nights.' },
+      { term: 'Commons', also: ['tragedy of the commons'], track: 'systems', def: 'Something shared that nobody owns, where each person taking a bit more adds up to ruin. A shared fridge, a fishing ground, the quiet in a library.' },
+      { term: 'Leverage point', also: ['leverage points'], track: 'systems', def: 'A place where a small push moves a whole system. Usually it changes how something grows, not how big it is today - like a café learning its regulars\' names.' },
+      { term: 'Mental model', also: ['mental models'], track: 'systems', def: 'The picture of the world you carry in your head. Useful, never complete, and sometimes out of date - like a map of a bridge that fell down.' }
+    ]
+  },
+  {
     group: 'Core Git',
     items: [
       { term: 'Repository', also: ['repo'], def: 'A project folder Git is watching. The folder plus a hidden <code>.git</code> directory holding the entire history.' },
