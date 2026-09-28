@@ -1050,13 +1050,13 @@ function stepSim(stage, s) {
   start();
 }
 
-/* "Same shape, different room" - pick the one that is NOT the pattern.
+/* "Spot it in real life" - pick the one that is NOT the pattern.
    Inside a level you can try again (a miss still goes on the Review pile);
    in Review it is one shot, like any quiz. */
 function stepRecognise(stage, s, oneShot, onDone) {
   const r = s.recognise;
   const card = el('div', 'card');
-  card.innerHTML = `<div class="kicker">Same shape, different room</div><h2>${r.q}</h2>`;
+  card.innerHTML = `<div class="kicker">Spot it in real life</div><h2>${r.q}</h2>`;
   const box = el('div', 'choices');
   const letters = 'ABCD';
   let missed = false, done = false, fb = null;

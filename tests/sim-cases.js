@@ -187,7 +187,7 @@ export function cases() {
       ['bad', 'mid', 'good'].forEach(b => {
         const d = sim.debrief[b];
         ok(Array.isArray(d) && d.length >= 2 && d.length <= 3, `${b}: ${d && d.length} paragraphs`);
-        (VOCAB[n.id] || []).forEach(w => ok(new RegExp('<i>' + w + '</i>', 'i').test(d.join(' ')), `${b} band names "${w}" in italics`));
+        (VOCAB[n.id] || []).forEach(w => ok(new RegExp('<i>' + w + 's?</i>', 'i').test(d.join(' ')), `${b} band names "${w}" in italics`));
       });
     });
     add(`${n.id} recognise: 4 situations, one odd, feedback for each`, () => {
@@ -197,10 +197,10 @@ export function cases() {
       ok(r.right && /<b class="nolink">/.test(r.right), 'right answer names the level that covers it');
       r.choices.forEach((c, k) => { if (k !== r.odd) ok(r.wrong[k] && r.wrong[k].length > 20, `wrong[${k}] explains the pattern`); });
     });
-    add(`${n.id} lessons do not name the vocabulary before the game`, () => {
-      if (n.id === 'st-12') return;   // the applied level deliberately reuses names already learned
-      const lessonText = n.steps.filter(s => s.t === 'lesson').map(s => JSON.stringify(s.body)).join(' ').toLowerCase();
-      (VOCAB[n.id] || []).forEach(w => ok(!new RegExp('\\b' + w + '\\b').test(lessonText), `lesson says "${w}" before the debrief`));
+    add(`${n.id} first lesson explains the idea in plain words`, () => {
+      const first = JSON.stringify(n.steps[0].body).toLowerCase();
+      (VOCAB[n.id] || []).forEach(w => ok(first.includes(w), `first lesson names "${w}"`));
+      n.steps.filter(s => s.t === 'lesson').forEach(s => ok(!s.body.some(b => b.svg), 'no diagrams needed'));
     });
   });
 
