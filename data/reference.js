@@ -224,6 +224,23 @@ export const GLOSSARY = [
       { term: 'MVP', def: 'The smallest version that delivers the actual value. Defining it honestly is what separates shipped ideas from abandoned ones.' },
       { term: 'Scope creep', def: 'The steady expansion of what you are building. The most common reason a project never launches.' }
     ]
+  },
+  {
+    group: 'Debugging & reading errors',
+    items: [
+      { term: 'Error type', also: ['error types'], def: 'The first word of an error, naming the kind of mistake. <code>TypeError</code>: a value used as the wrong kind of thing. <code>ReferenceError</code>: a name that does not exist there. <code>SyntaxError</code>: the code cannot even be read.' },
+      { term: 'Stack frame', also: ['stack frames'], def: 'One line of a stack trace: one function call, with the file, line and column it was on when things broke. In JavaScript the top frame is where it broke.' },
+      { term: 'Regression', also: ['regressions'], def: 'Something that used to work and now does not. The word points you at a change - code, packages, env vars, data - rather than the whole codebase.', cmd: 'git log --oneline --since=yesterday' },
+      { term: 'DevTools', def: 'The developer panel built into every browser (right-click, Inspect). The Console tab shows errors from code on the page; the Network tab shows every request and what came back.' },
+      { term: 'Root cause', also: ['root causes'], def: 'The first thing that went wrong, as opposed to the place it finally crashed. The error fires where a bad value is used; the root cause is where it was made.' },
+      { term: 'Minimal reproduction', def: 'The smallest input and fewest steps that still show a bug, every time. Ideally a failing test. You cannot prove a fix for a bug you cannot trigger.' },
+      { term: 'Swallowed error', also: ['swallowed errors'], def: 'An error caught and ignored - an empty <code>catch</code>, <code>@ts-ignore</code>, a stray <code>?.</code>. The crash stops; the cause stays. The classic sign of a fix that only hid the symptom.' },
+      { term: 'Log level', also: ['log levels'], def: 'How serious a log line is: debug, info, warn, error. Lets you filter the noise and see only what matters.', cmd: 'tail -f logs/app.log | grep ERROR' },
+      { term: 'CORS', also: ['Cross-Origin Resource Sharing'], def: 'The browser rule that stops a page reading a response from another domain unless that domain allows it with an <code>Access-Control-Allow-Origin</code> header. Fixed on the server being called, not in your page. Browsers only - curl ignores it.' },
+      { term: 'Divide and conquer', def: 'Halving the search space with every check - half the code, half the data, half the commits - until one suspect is left. About ten checks cover a thousand suspects.', cmd: 'git bisect run npm test' },
+      { term: 'Last known good', def: 'The most recent version you know worked. Go back to it so users are unaffected while you find the real bug.', cmd: 'git revert HEAD' },
+      { term: 'Bug report', also: ['bug reports'], def: 'A record of a bug someone who was not there can act on: steps to reproduce, expected vs actual, the exact error with file and line, versions, and what you already tried.' }
+    ]
   }
 ];
 
