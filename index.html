@@ -32,7 +32,7 @@
     <div class="stat"><b id="stat-xp">0</b><span>XP</span></div>
     <div class="stat"><b id="stat-rank">Rookie</b><span>Rank</span></div>
     <div class="stat"><b id="stat-done">0</b><span>Levels</span></div>
-    <div class="stat"><b id="stat-streak">0</b><span>Best streak</span></div>
+    <div class="stat"><b id="stat-streak">0</b><span>Best combo</span></div>
   </section>
 
   <section class="quick-row">
@@ -47,7 +47,11 @@
     </button>
   </section>
 
+  <section id="resume-wrap" class="resume-wrap" aria-label="Resume"></section>
+
   <section id="track-list" class="track-list" aria-label="Tracks"></section>
+
+  <section id="daily" class="daily card" aria-label="Daily question"></section>
 
   <section class="home-extra">
     <button class="ghost-btn" id="btn-glossary">📖 Glossary — every term, plain English</button>
@@ -55,7 +59,28 @@
     <button class="ghost-btn" id="btn-sync">🔗 Move progress to another device</button>
     <button class="ghost-btn danger" id="btn-reset">↺ Reset all progress</button>
     <p class="footer-note">Built with Claude Code · <a href="https://github.com/adamsemien/GitGames" target="_blank" rel="noopener">source on GitHub</a></p>
+    <p class="footer-note"><a href="team.html">For teams</a> · <a href="privacy.html">Privacy</a></p>
   </section>
+</main>
+
+<!-- ============ ONBOARDING (first visit, one question) ============ -->
+<main id="onboard" class="screen">
+  <div class="onb">
+    <div class="logo">
+      <span class="logo-mark">&lt;/&gt;</span>
+      <h1>Git<span>Games</span></h1>
+    </div>
+    <div class="kicker">One question</div>
+    <h2 id="onb-q">What do you build with?</h2>
+    <p class="onb-sub">So the first levels fit the tool in your hands.</p>
+    <div class="onb-opts">
+      <button class="onb-opt" data-tool="lovable-bolt-replit">Lovable, Bolt or Replit</button>
+      <button class="onb-opt" data-tool="cursor">Cursor</button>
+      <button class="onb-opt" data-tool="claude-code">Claude Code</button>
+      <button class="onb-opt" data-tool="codex">Codex</button>
+      <button class="onb-opt" data-tool="not-yet">Not building yet</button>
+    </div>
+  </div>
 </main>
 
 <!-- ============ LEVEL SELECT ============ -->
@@ -120,10 +145,30 @@
   </div>
 </div>
 
+<!-- ============ PRO LOCK ============ -->
+<div id="pro" class="sheet" hidden>
+  <div class="sheet-bg" data-close-pro></div>
+  <div class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="pro-title">
+    <div class="sheet-grip"></div>
+    <div class="kicker">Pro level</div>
+    <h3 id="pro-title">Unlock every level for $29</h3>
+    <p><b id="pro-level"></b> is a Pro level. One payment opens all 170+ levels on every track, including the full Ship It Safely course, forever.</p>
+    <a id="pro-buy" class="btn" href="#" target="_blank" rel="noopener">Unlock Pro · $29</a>
+    <p class="pro-note" id="pro-nolink" hidden>Checkout is not open yet. Check back soon.</p>
+    <div class="pro-code-row">
+      <input id="pro-code" class="email-input" type="text" placeholder="Have a code? Paste it here" autocomplete="off" autocapitalize="none" spellcheck="false" />
+      <button id="pro-code-go" class="btn sec" type="button">Unlock with code</button>
+    </div>
+    <div class="sheet-acts">
+      <button class="btn sec" data-close-pro>Not now</button>
+    </div>
+  </div>
+</div>
+
 <!-- ============ TOASTS / OVERLAYS ============ -->
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 <div id="confetti" aria-hidden="true"></div>
 
-<script type="module" src="app.js?v=6"></script>
+<script type="module" src="app.js?v=7"></script>
 </body>
 </html>

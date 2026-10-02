@@ -21,6 +21,9 @@ Build real commands by **tapping tokens or typing them** — the two are interch
 | 🧬 **Codex** | 8 | Sandboxes and approval policies, interactive vs `exec`, AGENTS.md, config profiles, MCP, the reviewer pattern |
 | 👻 **Terminal & Ghostty** | 12 | Terminal vs shell, splits and tabs, scrollback and search, command palette, the quick terminal, config anatomy, `macos-option-as-alt`, config auditing, shell tooling, workspace layout |
 | 🌊 **The Vibe Stack** | 12 | Spec-first, small commits, second-opinion review, secrets, environments, migrations, webhooks, preview deploys and rollback, debugging with agents, prompt injection, cost economics |
+| 🛡️ **Ship It Safely** | 6 | Starter course. Public vs private settings, GitHub push protection, Supabase row-level security and policies, the service role key, and a launch checklist. Level 1 is free |
+
+**Survive** is the first card on the home screen: five levels pulled from the tracks above (undo, secrets, reading an AI fix, reverting, and knowing when it really shipped). It is free and takes about twenty minutes.
 
 **166 levels · 391 steps · 162 glossary terms · a full cheat sheet**
 
@@ -38,6 +41,29 @@ Ghostty content is verified against Ghostty 1.3.1 defaults (`ghostty +show-confi
 **Review** tracks every question you get wrong and serves them back later, mixed with checks from levels you cleared a while ago — two minutes, no lessons. **Search** covers every lesson, quiz and glossary term. **Move progress** exports a code you paste on another device.
 
 XP, streak combos, ranks from Rookie to Legend. Progress is saved in `localStorage`. Installable to the home screen and works offline.
+
+**Daily question and streak.** The home screen shows one quiz question a day, the same one for every player on that date. Answering it, or clearing any level, counts for the day. The streak counts consecutive days. Close the app mid-level and a **Resume** button brings you back to the same step.
+
+## Free and Pro
+
+The free set is the Survive path, Systems Thinking, Terminal 101, Git & GitHub chapters 1 to 3, Prove Your Ground chapter 1, Debugging chapter 1 and Ship It Safely level 1. Every other level shows a Pro lock. Pro is a one-time $29 unlock through a Stripe Payment Link. A buyer gets a code; typing it in, or opening the site with `?unlock=<code>`, unlocks every level on that device. The code is checked against a SHA-256 hash in the browser, so the code itself is never in the repository. A level you already cleared stays playable without Pro.
+
+## Configuration
+
+`config.js` holds the public client settings. Every value is empty by default, and an empty value switches that feature off: no analytics script loads, no email is sent, no checkout opens.
+
+| Key | What it is |
+|---|---|
+| `POSTHOG_KEY`, `POSTHOG_HOST` | PostHog project key and host. Both must be set for analytics to load |
+| `LOOPS_FORM_URL` | Loops form endpoint for the one email ask after the third cleared level |
+| `STRIPE_PAYMENT_LINK` | The Stripe Payment Link the Pro lock opens |
+| `UNLOCK_CODE_SHA256` | Hex SHA-256 of the Pro unlock code (`printf '%s' 'code' \| shasum -a 256`) |
+| `TEAM_BOOKING_URL` | Booking link for the team pack on `team.html` |
+| `SITE_URL` | The public URL used in share text |
+
+Nothing in `config.js` is secret. Secrets never belong in this repository.
+
+Events sent to PostHog when it is on: `gg_onboarding_answer`, `gg_level_start`, `gg_level_finish`, `gg_step_miss`, `gg_email_submit`, `gg_unlock_click`, `gg_unlock_success`, `gg_share_click`, `gg_daily_done`. `privacy.html` lists exactly what is collected.
 
 ## Running it locally
 
@@ -101,16 +127,22 @@ The Simulate games are pure functions, so they are tested by replaying fixed act
 
 ```bash
 node tests/sim.test.mjs
+node tests/content.test.mjs
 ```
 
-Or serve the repo and open `/tests/sim.html` in any browser - it runs the same checks.
+Or serve the repo and open `/tests/sim.html` in any browser - it runs the same Simulate checks.
+
+`tests/content.test.mjs` checks the public config shape, the Survive path, the free set, Ship It Safely, the service worker manifest, and that `tests/fixtures/progress-v3.json` (a save made under the previous release) still loads with nothing lost. CI (`.github/workflows/ci.yml`, job `verify`) runs both plus `node --check` on every `.js` file.
 
 ## Layout
 
 ```
 index.html      screens + shell
 styles.css      design tokens, all UI
-app.js          engine: state, routing, the three step types
+app.js          engine: state, routing, the step types, Survive, Pro, analytics
+config.js       public client settings (all empty by default)
+team.html       the team pack page
+privacy.html    exactly what is collected
 sw.js           offline cache (production only)
 data/
   tracks.js     registry — the one file you edit to add a track
@@ -123,12 +155,16 @@ data/
   apis.js
   tooling.js
   harness.js
+  debugging.js  Debugging & Reading Errors
+  safely.js     Ship It Safely (starter)
   reference.js  glossary (also powers auto-linking) + cheat sheet
   svg.js        diagram kit
 tests/
   sim-cases.js  Simulate checks, shared by the two runners below
   sim.test.mjs  node runner
   sim.html      browser runner
+  content.test.mjs          config, paths, free set, Ship It Safely, fixture load
+  fixtures/progress-v3.json a save made under the previous release
 ```
 
 ## License

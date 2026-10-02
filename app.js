@@ -6,6 +6,7 @@
    ============================================================ */
 import { TRACKS } from './data/tracks.js';
 import { GLOSSARY, CHEATS } from './data/reference.js';
+import { CONFIG } from './config.js';
 
 /* ============================================================
    STATE
@@ -14,7 +15,7 @@ const KEY = 'gitgames.v3';
 const OLD_KEY = 'gitgames.v2';
 const state = load();
 
-function blank() { return { xp: 0, bestStreak: 0, done: {}, misses: {}, lastSeen: {}, outUsed: {} }; }
+function blank() { return { xp: 0, bestStreak: 0, done: {}, misses: {}, lastSeen: {}, outUsed: {}, onb: null, emailAsked: false, days: {}, daily: {}, resume: null }; }
 
 function load() {
   try {
@@ -101,6 +102,129 @@ TRACKS.forEach(track => track.chapters.forEach(chapter => chapter.nodes.forEach(
   NODE_INDEX.set(node.id, { node, track, chapter });
 })));
 
+/* ============================================================
+   WEEK 0 - the paid traction test
+   The Survive path, the free set, Pro, analytics, streaks and the
+   daily question all live here so the lesson files stay untouched.
+   ============================================================ */
+
+/* The five levels a new player sees first. Order matters. */
+const SURVIVE_PATH = ['g-08', 'vb-04', 'db-07', 'db-11', 'pg-17'];
+const SURVIVE = {
+  id: 'survive', name: 'Survive', emoji: '🧯', glow: '#ff5c6e', time: '~20 min',
+  desc: 'Five levels that stop the five ways an AI-built project goes wrong this week. Free, start here.',
+  chapters: [{ title: 'The five that save you', desc: 'Undo, secrets, reading a fix, reverting, and knowing when it really shipped.',
+    nodes: SURVIVE_PATH.map(id => NODE_INDEX.get(id).node) }]
+};
+
+/* The free set. Everything else needs Pro, or is already cleared. */
+const FREE_TRACKS = new Set(['systems', 'terminal']);
+const FREE_CHAPTERS = { github: 3, ground: 1, debugging: 1 };   // the first N chapters
+const FREE_LEVELS = new Set([...SURVIVE_PATH, 'ss-01']);
+const PRO_KEY = 'gitgames.pro';   // outside the progress save, so a reset never drops a purchase
+const hasPro = () => { try { return localStorage.getItem(PRO_KEY) === '1'; } catch (_) { return false; } };
+function isFree(id) {
+  if (FREE_LEVELS.has(id)) return true;
+  const e = NODE_INDEX.get(id);
+  if (!e) return false;
+  if (FREE_TRACKS.has(e.track.id)) return true;
+  return e.track.chapters.indexOf(e.chapter) < (FREE_CHAPTERS[e.track.id] || 0);
+}
+const canPlay = id => isFree(id) || hasPro() || !!state.done[id];
+
+/* ---------- analytics (PostHog) ----------
+   Off unless both POSTHOG_KEY and POSTHOG_HOST are set: no script, no request.
+   The loader mirrors the official snippet (a stub that queues calls until
+   array.js arrives). NOT VERIFIED against current PostHog docs in the
+   session that wrote it: Context7 and posthog.com were unreachable. */
+const ANALYTICS_ON = !!(CONFIG.POSTHOG_KEY && CONFIG.POSTHOG_HOST);
+function loadPostHog() {
+  if (!ANALYTICS_ON || window.posthog) return;
+  const ph = window.posthog = [];
+  ph._i = []; ph.__SV = 1;
+  ['capture', 'identify', 'register', 'reset', 'opt_out_capturing', 'opt_in_capturing'].forEach(m => {
+    ph[m] = function () { ph.push([m].concat(Array.prototype.slice.call(arguments, 0))); };
+  });
+  ph.init = (key, cfg, name) => { ph._i.push([key, cfg, name]); };
+  const host = CONFIG.POSTHOG_HOST.replace(/\/$/, '');
+  const sc = document.createElement('script');
+  sc.type = 'text/javascript'; sc.async = true; sc.crossOrigin = 'anonymous';
+  sc.src = host.replace('.i.posthog.com', '-assets.i.posthog.com') + '/static/array.js';
+  document.head.appendChild(sc);
+  ph.init(CONFIG.POSTHOG_KEY, { api_host: host, person_profiles: 'identified_only' });
+}
+function capture(name, props) {
+  if (!ANALYTICS_ON) return;
+  try { window.posthog && window.posthog.capture(name, props || {}); } catch (_) {}
+}
+
+/* ---------- Pro unlock ---------- */
+async function sha256(text) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+async function tryUnlock(code, method) {
+  const want = String(CONFIG.UNLOCK_CODE_SHA256 || '').trim().toLowerCase();
+  const c = String(code || '').trim();
+  if (!want || !c || !(crypto && crypto.subtle)) return false;
+  let got = '';
+  try { got = await sha256(c); } catch (_) { return false; }
+  if (got !== want) return false;
+  try { localStorage.setItem(PRO_KEY, '1'); } catch (_) {}
+  capture('gg_unlock_success', { method });
+  return true;
+}
+function proOpenUrl() { return CONFIG.STRIPE_PAYMENT_LINK || ''; }
+let lockFor = null;
+function openLock(node) {
+  lockFor = node;
+  capture('gg_unlock_click', { level: node ? node.id : '', source: 'lock' });
+  $('#pro-level').textContent = node ? node.name : 'Every level';
+  const buy = $('#pro-buy');
+  const url = proOpenUrl();
+  buy.href = url || '#';
+  $('#pro-nolink').hidden = !!url;
+  $('#pro-code').value = '';
+  const s = $('#pro');
+  s.hidden = false;
+  void s.offsetHeight;
+  s.classList.add('open');
+}
+function closeLock() {
+  const s = $('#pro');
+  if (s.hidden) return;
+  s.classList.remove('open');
+  setTimeout(() => { s.hidden = true; }, 220);
+}
+function afterUnlock() {
+  closeLock();
+  toast('Pro unlocked. Every level is open.');
+  if (document.querySelector('#levels.active') && curTrack) openTrack(curTrack);
+  else renderHome();
+}
+
+/* ---------- days, streak, daily question ---------- */
+const dayKey = (d = new Date()) => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+function markDay() { (state.days || (state.days = {}))[dayKey()] = 1; }
+function dayStreak() {
+  const days = state.days || {};
+  const d = new Date();
+  if (!days[dayKey(d)]) d.setDate(d.getDate() - 1);   // today still open: count from yesterday
+  let n = 0;
+  while (days[dayKey(d)]) { n++; d.setDate(d.getDate() - 1); }
+  return n;
+}
+/* One quiz for everyone on the same date: a stable hash of the date picks
+   from every quiz step, in registry order. */
+const DAILY_POOL = [];
+TRACKS.forEach(track => track.chapters.forEach(ch => ch.nodes.forEach(node =>
+  node.steps.forEach((step, i) => { if (step.t === 'quiz') DAILY_POOL.push({ step, key: node.id + '#' + i, node, track }); }))));
+function dailyPick(key) {
+  let h = 2166136261;
+  for (const ch of key) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619) >>> 0; }
+  return DAILY_POOL[h % DAILY_POOL.length];
+}
+
 /* glossary lookup, longest term first so "pull request" wins over "pull".
    An entry with `track: 'id'` links only inside that track, so a word that is
    ordinary English elsewhere ("flow", "delay") never lights up other lessons. */
@@ -149,7 +273,7 @@ function renderHome() {
 
   const list = $('#track-list');
   list.innerHTML = '';
-  TRACKS.forEach(tr => {
+  [SURVIVE, ...TRACKS].forEach(tr => {
     const total = nodesOf(tr).length, dn = doneCount(tr);
     const card = el('button', 'track-card');
     card.style.setProperty('--glow', tr.glow);
@@ -163,9 +287,69 @@ function renderHome() {
       </div>
       <div class="tc-rail"><i style="width:${total ? (dn / total * 100) : 0}%"></i></div>`;
     card.onclick = () => { buzz(8); openTrack(tr); };
+    if (tr === SURVIVE) { card.classList.add('survive'); card.dataset.path = 'survive'; }
+    else if (!hasPro() && !nodesOf(tr).every(n => canPlay(n.id))) card.classList.add('partly-locked');
     if (tr.lead) list.appendChild(el('p', 'track-lead', esc(tr.lead)));
     list.appendChild(card);
   });
+  renderResume();
+  renderDaily();
+}
+
+/* ---------- resume a level you closed mid-way ---------- */
+function renderResume() {
+  const wrap = $('#resume-wrap'); wrap.innerHTML = '';
+  const r = state.resume;
+  const entry = r && NODE_INDEX.get(r.id);
+  if (!entry || !(r.i > 0) || r.i >= entry.node.steps.length) return;
+  const b = el('button', 'resume-bar');
+  b.innerHTML = `<b>Resume</b><span>${esc(entry.node.name)} · step ${r.i + 1} of ${entry.node.steps.length}</span>`;
+  b.onclick = () => { buzz(8); curTrack = SURVIVE_PATH.includes(r.id) ? SURVIVE : entry.track; playNode(curTrack, entry.node, r); };
+  wrap.appendChild(b);
+}
+
+/* ---------- the daily question ---------- */
+function renderDaily() {
+  const box = $('#daily'); box.innerHTML = '';
+  if (!DAILY_POOL.length) return;
+  const today = dayKey();
+  const pick = dailyPick(today);
+  const s = pick.step;
+  const got = (state.daily || {})[today];
+  const streak = dayStreak();
+  const head = el('div', 'daily-head');
+  head.innerHTML = `<span class="kicker">Daily question</span><span class="day-streak" id="day-streak">🔥 ${streak} day${streak === 1 ? '' : 's'} in a row</span>`;
+  box.appendChild(head);
+  box.appendChild(el('h2', 'daily-q', s.q));
+  const choices = el('div', 'choices');
+  const letters = 'ABCD';
+  s.choices.forEach((txt, k) => {
+    const b = el('button', 'choice', `<span class="ltr">${letters[k]}</span><span>${txt}</span>`);
+    if (got) {
+      b.disabled = true;
+      if (k === s.a) b.classList.add(got.right && got.pick === k ? 'right' : 'reveal');
+      if (k === got.pick && !got.right) b.classList.add('wrong');
+    } else {
+      b.onclick = () => {
+        const right = k === s.a;
+        (state.daily || (state.daily = {}))[today] = { pick: k, right, key: pick.key };
+        markDay();
+        save();
+        buzz(right ? 12 : [30, 40, 30]);
+        capture('gg_daily_done', { date: today, right, step: pick.key });
+        renderDaily();
+      };
+    }
+    choices.appendChild(b);
+  });
+  box.appendChild(choices);
+  if (got) {
+    const fb = el('div', 'feedback ' + (got.right ? 'good' : 'bad'));
+    fb.innerHTML = `<b>${got.right ? '✓ Right. Back tomorrow for the next one.' : '✗ Not quite. Back tomorrow for another.'}</b>${s.why}`;
+    box.appendChild(fb);
+  } else {
+    box.appendChild(el('p', 'daily-sub', 'Same question for everyone today. Answer it to keep your streak.'));
+  }
 }
 
 /* ============================================================
@@ -194,7 +378,7 @@ function openTrack(tr) {
       head.appendChild(el('span', 'ch-flag' + (anyOut ? ' out' : ''), anyOut ? '⚡ Tested out' : '✓ Cleared'));
     }
     if (!chDone && !examLocked('s:' + tr.id + ':' + ci) &&
-        chapterExamSteps(ch).length >= 3) {
+        ch.nodes.every(n => canPlay(n.id)) && chapterExamSteps(ch).length >= 3) {
       const t = el('button', 'testout-btn', '⚡ Test out');
       t.title = 'Skip the lessons — pass the section\'s checks instead';
       t.onclick = e => { e.stopPropagation(); buzz(8); examIntro(chapterExam(tr, ch, ci)); };
@@ -208,12 +392,14 @@ function openTrack(tr) {
       const isDone = !!state.done[n.id];
       const testedOut = isDone && state.done[n.id].out;
       const isNext = firstUndone && n.id === firstUndone.id;
-      const b = el('button', 'node' + (isDone ? ' done' : '') + (testedOut ? ' out' : '') + (isNext ? ' next' : ''));
+      const locked = !canPlay(n.id);
+      const b = el('button', 'node' + (isDone ? ' done' : '') + (testedOut ? ' out' : '') + (isNext && !locked ? ' next' : '') + (locked ? ' locked' : ''));
       if (testedOut) b.title = 'Tested out — cleared without the lessons';
+      if (locked) b.title = 'Pro level. Tap to unlock everything.';
       b.innerHTML = `<span class="n-num">${String(idx).padStart(2, '0')}</span>
-        <span class="n-ico">${isDone ? (testedOut ? '⚡' : '✓') : n.ico}</span>
+        <span class="n-ico">${isDone ? (testedOut ? '⚡' : '✓') : locked ? '🔒' : n.ico}</span>
         <span class="n-lbl">${esc(n.name)}</span>`;
-      b.onclick = () => { buzz(8); playNode(tr, n); };
+      b.onclick = () => { buzz(8); locked ? openLock(n) : playNode(tr, n); };
       grid.appendChild(b);
     });
     c.appendChild(grid);
@@ -229,12 +415,17 @@ function openTrack(tr) {
    ============================================================ */
 let cur = null;
 
-function playNode(tr, node) {
+function playNode(tr, node, from) {
+  if (!canPlay(node.id)) return openLock(node);
   cur = {
     track: tr, node, review: false,
     steps: node.steps.map((step, i) => ({ step, key: node.id + '#' + i })),
-    i: 0, xp: 0, streak: 0, misses: 0
+    i: 0, xp: 0, streak: 0, misses: 0, results: []
   };
+  // Picking up where you closed the app: same step index, same score so far.
+  if (from && from.i > 0 && from.i < cur.steps.length)
+    Object.assign(cur, { i: from.i, xp: from.xp || 0, streak: from.streak || 0, misses: from.misses || 0, results: (from.results || []).slice() });
+  capture('gg_level_start', { level: node.id, track: tr.id, resumed: !!from });
   $('#play-title').textContent = node.name;
   $('#play-sub').textContent = tr.name;
   startPlay();
@@ -358,6 +549,11 @@ function renderStep() {
     `${cur.right} right · ${cur.exam.need} of ${cur.exam.total} to pass`;
   const { step, key } = steps[i];
   cur.stepKey = key;
+  cur.stepMissed = false;
+  if (cur.node && !cur.review && !cur.exam) {
+    state.resume = { id: cur.node.id, i, xp: cur.xp, streak: cur.streak, misses: cur.misses, results: (cur.results || []).slice() };
+    save();
+  }
   // Review re-serves only a game's recognise question, never the game itself.
   if (step.t === 'sim' && cur.review) stepRecognise(stage, step, true);
   else ({ lesson: stepLesson, quiz: stepQuiz, build: stepBuild, keys: stepKeys, sim: stepSim })[step.t](stage, step);
@@ -1101,6 +1297,8 @@ function stepRecognise(stage, s, oneShot, onDone) {
 function recordMiss() {
   const key = cur.stepKey;
   if (!key) return;
+  cur.stepMissed = true;
+  capture('gg_step_miss', { step: key, level: key.split('#')[0] });
   const [nodeId, si] = key.split('#');
   const m = state.misses[key] || { n: 0, nodeId, si: +si };
   m.n++; m.ts = Date.now();
@@ -1125,6 +1323,7 @@ function resolve(right, why, card, gain, keepMiss) {
     cur.streak = 0;
     recordMiss();
   }
+  (cur.results || (cur.results = [])).push(right && !cur.stepMissed);
   updCombo();
 
   const bonus = right && cur.streak >= 3 ? 10 : 0;
@@ -1190,7 +1389,13 @@ function finishNode() {
   state.done[node.id] = { xp: best };
   state.lastSeen[node.id] = Date.now();
   state.xp += delta;
+  state.resume = null;
+  markDay();
+  // The email ask: once, after the third cleared level, never in the way.
+  const needEmail = Object.keys(state.done).length >= 3 && !state.emailAsked;
+  if (needEmail) state.emailAsked = true;
   save();
+  capture('gg_level_finish', { level: node.id, track: track.id, xp, misses: cur.misses, fresh });
 
   const total = nodesOf(track).length, dn = doneCount(track);
   const trackDone = dn === total;
@@ -1213,6 +1418,8 @@ function finishNode() {
   const b2 = el('button', 'btn sec', 'Level map');
   b2.style.marginTop = '10px';
   b2.onclick = () => { buzz(6); openTrack(track); };
+  c.appendChild(shareBox(node, cur.results || []));
+  if (needEmail) c.appendChild(emailForm());
   c.append(b1, b2);
   stage.appendChild(c);
 
@@ -1240,6 +1447,7 @@ function finishExam() {
       state.lastSeen[n.id] = Date.now();
     });
     state.xp += gained;
+    markDay();
     save();
   }
 
@@ -1282,6 +1490,68 @@ function finishExam() {
   if (passed) { confetti(); buzz([15, 50, 15]); }
   if (passed && dn === total) toast('👑 ' + track.name + ' mastered');
   renderHome();
+}
+
+/* ---------- share a cleared level ---------- */
+function shareText(node, results) {
+  const squares = results.map(ok => ok ? '🟩' : '🟨').join('') || '🟩';
+  const url = CONFIG.SITE_URL || (location.origin + location.pathname);
+  return `GitGames · ${node.name}\n${squares}\n${url}`;
+}
+function shareBox(node, results) {
+  const box = el('div', 'share-box');
+  const b = el('button', 'btn sec', '📣 Share');
+  b.type = 'button';
+  const out = el('pre', 'share-text');
+  out.hidden = true;
+  b.onclick = async () => {
+    buzz(6);
+    const text = shareText(node, results);
+    capture('gg_share_click', { level: node.id });
+    out.textContent = text; out.hidden = false;
+    try {
+      if (navigator.share) { await navigator.share({ text }); return; }
+      await navigator.clipboard.writeText(text); toast('Copied. Paste it anywhere.');
+    } catch (_) { toast('Select the text above to copy it'); }
+  };
+  box.append(b, out);
+  return box;
+}
+
+/* ---------- the one email ask ----------
+   Posts the address to a Loops form endpoint as a plain form submit.
+   NOT VERIFIED against current Loops docs in the session that wrote it:
+   Context7 and loops.so were unreachable. With no endpoint set, nothing
+   is sent anywhere and the address is not stored. */
+function emailForm() {
+  const f = el('form', 'email-card');
+  f.innerHTML = `<div class="kicker">Three levels in</div>
+    <h3>Want the next five, by email?</h3>
+    <p>One short email a week: a level, a real incident, a fix. No spam, unsubscribe in one tap.</p>
+    <input class="email-input" type="email" name="email" placeholder="you@example.com" autocomplete="email" inputmode="email" required />
+    <div class="email-acts">
+      <button class="btn" type="submit">Send me the next ones</button>
+      <button class="btn sec email-skip" type="button">Skip</button>
+    </div>`;
+  const done = msg => { f.innerHTML = `<p class="email-done">${msg}</p>`; };
+  f.querySelector('.email-skip').onclick = () => { buzz(6); capture('gg_email_submit', { skipped: true }); f.remove(); };
+  f.onsubmit = async e => {
+    e.preventDefault();
+    const email = f.querySelector('.email-input').value.trim();
+    if (!email) return;
+    buzz(8);
+    capture('gg_email_submit', { skipped: false });
+    if (!CONFIG.LOOPS_FORM_URL) { done('Thanks. Email delivery is not switched on yet, so nothing was sent.'); return; }
+    try {
+      const res = await fetch(CONFIG.LOOPS_FORM_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'email=' + encodeURIComponent(email) + '&userGroup=GitGames&source=gitgames-level-3'
+      });
+      done(res.ok ? 'Thanks. First one lands this week.' : 'That did not go through. Try again from the next level.');
+    } catch (_) { done('That did not go through. Try again from the next level.'); }
+  };
+  return f;
 }
 
 /* ============================================================
@@ -1470,8 +1740,47 @@ $('#btn-reset').onclick = () => {
   save(); renderHome(); toast('Progress reset');
 };
 
-renderHome();
-show('home');
+/* ---------- Pro sheet, onboarding, boot ---------- */
+document.addEventListener('click', e => { if (e.target.closest('[data-close-pro]')) closeLock(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#pro').hidden) closeLock(); });
+$('#pro-buy').onclick = e => {
+  capture('gg_unlock_click', { level: lockFor ? lockFor.id : '', source: 'buy' });
+  if (!proOpenUrl()) { e.preventDefault(); toast('Checkout is not open yet'); }
+};
+$('#pro-code-go').onclick = async () => {
+  buzz(6);
+  const ok = await tryUnlock($('#pro-code').value, 'code');
+  if (ok) afterUnlock(); else { toast('That code did not match'); buzz([30, 40, 30]); }
+};
+$('#pro-code').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); $('#pro-code-go').click(); } });
+
+document.querySelectorAll('#onboard .onb-opt').forEach(b => {
+  b.onclick = () => {
+    buzz(8);
+    state.onb = { tool: b.dataset.tool, ts: Date.now() };
+    save();
+    capture('gg_onboarding_answer', { tool: b.dataset.tool });
+    renderHome();
+    show('home');
+  };
+});
+
+async function boot() {
+  loadPostHog();
+  // ?unlock=CODE in the link a buyer gets back: unlock, then clean the URL.
+  let unlocked = false;
+  try {
+    const code = new URLSearchParams(location.search).get('unlock');
+    if (code) {
+      unlocked = await tryUnlock(code, 'query');
+      history.replaceState(null, '', location.pathname + location.hash);
+    }
+  } catch (_) {}
+  renderHome();
+  show(state.onb ? 'home' : 'onboard');
+  if (unlocked) toast('Pro unlocked. Every level is open.');
+}
+boot();
 
 // Offline support in production only — a service worker during local dev
 // just serves you yesterday's code and wastes an afternoon.
