@@ -1,6 +1,6 @@
 /* Network-first so updates always land; cache is the offline fallback. */
-const CACHE = 'gitgames-v1';
-const ASSETS = ['./', './index.html', './styles.css', './app.js', './icon.svg', './manifest.webmanifest'];
+const CACHE = 'gitgames-v2';
+const ASSETS = ['./', './index.html', './styles.css', './app.js', './config.js', './icon.svg', './manifest.webmanifest', './team.html', './privacy.html'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));

@@ -29,5 +29,6 @@ import { apis } from './apis.js';
 import { tooling } from './tooling.js';
 import { harness } from './harness.js';
 import { debugging } from './debugging.js';
+import { safely } from './safely.js';
 
-export const TRACKS = [systems, terminal, github, ground, apis, tooling, harness, claudeCode, codex, ghostty, vibe, debugging];
+export const TRACKS = [systems, terminal, github, ground, apis, tooling, harness, claudeCode, codex, ghostty, vibe, debugging, safely];

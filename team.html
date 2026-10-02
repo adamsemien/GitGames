@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+<title>GitGames for teams</title>
+<meta name="description" content="Get your whole team shipping safely with AI. A live session plus Pro for everyone." />
+<meta name="theme-color" content="#07070d" />
+<link rel="icon" href="icon.svg" type="image/svg+xml" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div id="stars" aria-hidden="true"></div>
+<main class="screen active page">
+  <header class="bar">
+    <a class="icon-btn" href="./" aria-label="Back to GitGames">‹</a>
+    <div class="bar-title"><b>GitGames for teams</b><span>Team pack</span></div>
+    <div style="width:44px"></div>
+  </header>
+  <div class="reader-body">
+    <section class="gl-item team-pack" id="team-pack">
+      <div class="kicker">Team pack</div>
+      <h2>Get the whole team shipping safely</h2>
+      <p>Your people are already building with AI. The team pack makes sure what they build does not leak a key, drop a table or ship a bug to a customer.</p>
+      <ul>
+        <li>Pro for up to 10 people: every track, every level, including Ship It Safely</li>
+        <li>A 60-minute live session on the three mistakes that cause real incidents</li>
+        <li>A shared progress board so you can see who has cleared what</li>
+        <li>Email support for 30 days after the session</li>
+      </ul>
+      <p class="team-price"><b>$290</b> per team, one payment.</p>
+      <a id="team-book" class="btn" href="#" target="_blank" rel="noopener">Book a team session</a>
+      <p class="team-note" id="team-note" hidden>Booking opens soon. Email the address on the home page in the meantime.</p>
+    </section>
+    <section class="gl-item">
+      <div class="kicker">Not a team?</div>
+      <p>Solo Pro is $29, once, inside the app. Open any locked level to unlock everything.</p>
+      <a class="btn sec" href="./">Back to GitGames</a>
+    </section>
+    <p class="footer-note"><a href="privacy.html">Privacy</a> · <a href="./">Home</a></p>
+  </div>
+</main>
+<script type="module">
+  import { CONFIG } from './config.js';
+  const a = document.getElementById('team-book');
+  const note = document.getElementById('team-note');
+  if (CONFIG.TEAM_BOOKING_URL) { a.href = CONFIG.TEAM_BOOKING_URL; }
+  else { note.hidden = false; a.addEventListener('click', e => { e.preventDefault(); note.scrollIntoView({ block: 'nearest' }); }); }
+</script>
+</body>
+</html>
