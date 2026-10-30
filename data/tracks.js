@@ -15,7 +15,7 @@
    { t:'sim',    title, brief, turns, init(), actions, step(), view(), score(), over()?,
                  debrief:{bad,mid,good}, recognise:{q,choices,odd,right,wrong} }  - see data/systems.js
 
-   Node ids must be unique across ALL tracks — they key saved progress.
+   Node ids must be unique across ALL tracks - they key saved progress.
    ============================================================ */
 import { systems } from './systems.js';
 import { terminal } from './terminal.js';
