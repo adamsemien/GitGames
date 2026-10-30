@@ -1,0 +1,33 @@
+# Midscene AI visual QA. On demand only until Adam approves the model and spend:
+# every assertion is a paid vision-model call (4 checks x 7 screens per run).
+# To make it nightly, uncomment `schedule` - after it passes the llm-job-gate checklist.
+name: Visual QA (AI)
+
+on:
+  workflow_dispatch:
+  # schedule:
+  #   - cron: '17 9 * * *'
+
+jobs:
+  midscene:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      MIDSCENE_MODEL_API_KEY: ${{ secrets.MIDSCENE_MODEL_API_KEY }}
+      MIDSCENE_MODEL_NAME: ${{ vars.MIDSCENE_MODEL_NAME }}
+      MIDSCENE_MODEL_FAMILY: ${{ vars.MIDSCENE_MODEL_FAMILY }}
+      MIDSCENE_MODEL_BASE_URL: ${{ vars.MIDSCENE_MODEL_BASE_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci && npx playwright install --with-deps chromium
+      - run: npm run qa:midscene
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: midscene-report
+          path: midscene_run/report/
+          retention-days: 14

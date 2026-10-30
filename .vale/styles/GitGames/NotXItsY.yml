@@ -1,0 +1,10 @@
+extends: existence
+message: "'%s' - the 'it's not X, it's Y' construction reads as AI copy. Say the Y plainly."
+level: error
+ignorecase: true
+# Each token is its own alternative. (Vale joins `raw:` entries into ONE
+# pattern, which is why the first version of this rule never fired.)
+tokens:
+  - '(?:it|this|that|which)(?:''s|’s| is| was) not (?:just |only |merely |about )?[^.?!:]{1,60}?[,;—–] ?(?:it|this|that|they)(?:''s|’s| is| was| are|''re|’re)'
+  - '(?:isn''t|isn’t|is not|aren''t|aren’t|are not|wasn''t|wasn’t) (?:just |only |merely |about )?[^.?!:]{1,60}?[,;—–] ?(?:it''s|it’s|it is|they''re|they’re|they are|it was)'
+  - 'not (?:just|only|merely) [^.?!;:]{1,60}?[,;—–] ?but'

@@ -105,6 +105,26 @@ node tests/sim.test.mjs
 
 Or serve the repo and open `/tests/sim.html` in any browser - it runs the same checks.
 
+## Quality gate
+
+The app ships with no build step and no runtime dependencies. The checks below are dev-only (`npm ci` once).
+
+| Check | Command | When | Blocks a merge |
+|---|---|---|---|
+| Simulate games | `node tests/sim.test.mjs` | every PR | yes |
+| Copy: house rules (Vale) | `npm run lint:copy` | every PR | yes, as a ratchet - see below |
+| Copy: grammar (Harper) | runs inside `lint:copy` | every PR | no - advisory report in `build/copy-report.json` |
+| Golden path + layout sweep + visual snapshots (Playwright) | `npm run test:e2e` | every PR | yes |
+| AI visual QA (Midscene) | `npm run qa:midscene` | on demand (Actions → Visual QA) | no |
+
+**Copy ratchet.** `tools/copy-baseline.json` holds today's count per Vale rule (em dashes, "it's not X, it's Y"). A PR that adds one fails. A PR that removes some passes - run `npm run lint:copy -- --update-baseline` in it to lock the lower count in. The rules live in `.vale/styles/GitGames`; `tests/copy/canary-bad.md` must be caught line by line or the gate fails as broken.
+
+**Visual snapshots.** A diff means a screen changed. Look at the image in the report, then run `npm run test:e2e:update` only if the change was intended.
+
+**Copy fixes** proposed by an agent go through a PR. Nothing in the gate rewrites copy.
+
+Vale is built from source: `go install github.com/vale-cli/vale/v3/cmd/vale@v3.25.1`.
+
 ## Layout
 
 ```

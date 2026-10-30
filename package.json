@@ -1,0 +1,22 @@
+{
+  "name": "gitgames",
+  "private": true,
+  "type": "module",
+  "description": "Dev-only tooling. The app itself ships with zero runtime dependencies and no build step.",
+  "scripts": {
+    "serve": "node tools/serve.mjs",
+    "test:sim": "node tests/sim.test.mjs",
+    "test:e2e": "playwright test",
+    "test:e2e:update": "playwright test --update-snapshots",
+    "strings": "node tools/extract-strings.mjs",
+    "lint:copy": "node tools/lint-copy.mjs",
+    "qa:midscene": "playwright test --config playwright.midscene.config.js"
+  },
+  "devDependencies": {
+    "@midscene/web": "1.17.4",
+    "@playwright/test": "1.64.1",
+    "acorn": "8.19.0",
+    "acorn-walk": "8.3.5",
+    "harper.js": "3.0.0"
+  }
+}

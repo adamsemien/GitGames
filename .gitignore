@@ -2,3 +2,7 @@ node_modules/
 .DS_Store
 .vercel
 *.log
+test-results/
+playwright-report/
+build/
+midscene_run/
