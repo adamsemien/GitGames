@@ -112,7 +112,7 @@ const football = {
       'Five famous musicians form a band and make a forgettable album.',
       'A dinner party of your six funniest friends goes flat because they all talk over each other.',
       'You keep turning a shower hotter because it still feels cold, then it suddenly goes scalding.',
-      'A restaurant hires a top chef for every station, but nobody organises the orders, so the food comes out late.'
+      'A restaurant hires a top chef for every station, but nobody organizes the orders, so the food comes out late.'
     ],
     odd: 2,
     right: 'Right. The shower is about a delay - the hot water arrives late. That\'s level 3, <b class="nolink">Delays</b>.',
@@ -459,21 +459,21 @@ const bartender = {
   debrief: {
     bad: [
       'Your bonus was big, but most regulars stopped coming. Pushing drinks paid you well every night and slowly drove away the people the bar depends on.',
-      'The lesson: when people are rewarded on one narrow number, sensible choices can hurt the whole system. That\'s <i>bounded rationality</i>. To change the behaviour, change what people are rewarded on or what they can see.'
+      'The lesson: when people are rewarded on one narrow number, sensible choices can hurt the whole system. That\'s <i>bounded rationality</i>. To change the behavior, change what people are rewarded on or what they can see.'
     ],
     mid: [
       'You mixed nights that boosted your bonus with nights that looked after the regulars. The bar is okay, not great.',
-      'The lesson: when people are rewarded on one narrow number, sensible choices can hurt the whole system. That\'s <i>bounded rationality</i>. To change the behaviour, change what people are rewarded on or what they can see.'
+      'The lesson: when people are rewarded on one narrow number, sensible choices can hurt the whole system. That\'s <i>bounded rationality</i>. To change the behavior, change what people are rewarded on or what they can see.'
     ],
     good: [
       'You kept the regulars coming, even though it meant a smaller bonus.',
-      'The lesson: when people are rewarded on one narrow number, sensible choices can hurt the whole system. That\'s <i>bounded rationality</i>. To change the behaviour, change what people are rewarded on or what they can see.'
+      'The lesson: when people are rewarded on one narrow number, sensible choices can hurt the whole system. That\'s <i>bounded rationality</i>. To change the behavior, change what people are rewarded on or what they can see.'
     ]
   },
   recognise: {
     q: 'Which one is NOT people chasing a narrow reward?',
     choices: [
-      'Call centre staff are judged on short calls, so they rush callers, who then call back again.',
+      'Call center staff are judged on short calls, so they rush callers, who then call back again.',
       'A school judged only on exam results stops teaching anything that isn\'t on the exam.',
       'A salesperson paid per sale pushes deals customers don\'t need, and customers stop coming back.',
       'One small change to a café\'s loyalty card doubles its sales, while five other changes did almost nothing.'
@@ -538,7 +538,7 @@ const promo = {
       'The lesson: a quick fix with a side effect can make the problem worse over time, so you need it again and again. These are called <i>fixes that fail</i>. Look for the fix that deals with the cause.'
     ],
     mid: [
-      'You ended roughly where you started. The promo\'s side effects cancelled out its bump.',
+      'You ended roughly where you started. The promo\'s side effects canceled out its bump.',
       'The lesson: a quick fix with a side effect can make the problem worse over time, so you need it again and again. These are called <i>fixes that fail</i>. Look for the fix that deals with the cause.'
     ],
     good: [
@@ -789,7 +789,7 @@ const coffee = {
       '',
       'That one IS leverage: one small change gave everyone more sleep, which improved everything else.',
       'That one IS leverage: moving the stairs costs nothing and changes thousands of choices a day.',
-      'That one IS leverage: just letting people see their usage changed their behaviour.'
+      'That one IS leverage: just letting people see their usage changed their behavior.'
     ]
   }
 };
@@ -1001,7 +1001,7 @@ export const systems = {
   time: '~60 min',
   lead: 'Start here. GitGames teaches you how to think before it teaches you the tools.',
   terms: 'own',
-  desc: 'Twelve simple ideas about how things work - why showers overshoot, rumours explode and shared fridges run empty. Each one explained plainly, then tried out in a quick game.',
+  desc: 'Twelve simple ideas about how things work - why showers overshoot, rumors explode and shared fridges run empty. Each one explained plainly, then tried out in a quick game.',
   chapters: [
     {
       title: 'Chapter 1 - How things add up',
@@ -1119,7 +1119,7 @@ export const systems = {
             L('What it means', [
               { p: 'A reinforcing loop is when more of something leads to even more of it.' },
               { ul: [
-                'A rumour: everyone who hears it tells more people.',
+                'A rumor: everyone who hears it tells more people.',
                 'Savings: interest earns more interest.',
                 'Debt: interest makes the debt bigger, which makes more interest.',
                 'A viral post: more views bring more shares, which bring more views.'
@@ -1149,7 +1149,7 @@ export const systems = {
               { p: 'Bounded rationality means people make sensible choices based on what they can see and what they\'re rewarded for - but they can\'t see the whole picture. So good people can make things worse without meaning to.' },
               { ul: [
                 'Staff paid per sale push deals customers don\'t need, and customers stop coming back.',
-                'A call centre judged on short calls rushes callers, who then call back.',
+                'A call center judged on short calls rushes callers, who then call back.',
                 'A school judged on test scores only teaches the test.'
               ] }
             ]),
@@ -1217,7 +1217,7 @@ export const systems = {
             ]),
             L('What helps', [
               { p: 'Shared things last when people agree on a fair share and can see what others are doing.' },
-              { call: { k: 'tip', t: 'Remember:', p: 'People copy what they see, so your behaviour sets the norm.' } }
+              { call: { k: 'tip', t: 'Remember:', p: 'People copy what they see, so your behavior sets the norm.' } }
             ]),
             L('The game', [
               { p: 'Four housemates share one fridge. For 8 days, take one, two or three portions a day. Your housemates copy what you took the day before.' },

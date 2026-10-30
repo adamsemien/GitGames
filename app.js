@@ -1,5 +1,5 @@
 /* ============================================================
-   GitGames — engine
+   GitGames - engine
    Tracks live in ./data/*.js and are registered in ./data/tracks.js
    Adding a track = add a file + one line in tracks.js. Nothing here changes.
    Step types: lesson, quiz, build, keys, sim (a small turn-based game).
@@ -74,14 +74,14 @@ function confetti() {
 }
 
 /* ============================================================
-   INDEXES — built once from the track data
+   INDEXES - built once from the track data
    ============================================================ */
 const nodesOf = tr => tr.chapters.flatMap(c => c.nodes);
 const doneCount = tr => nodesOf(tr).filter(n => state.done[n.id]).length;
 const trackXp = tr => nodesOf(tr).reduce((a, n) => a + (state.done[n.id]?.xp || 0), 0);
 
 /* Test-out uses only the one-shot question types. `keys` steps have no fail
-   state — you press until the line matches — so they cannot score a test. */
+   state - you press until the line matches - so they cannot score a test. */
 const EXAM_TYPES = new Set(['quiz', 'build']);
 const examStepsOf = node => node.steps
   .map((step, i) => ({ step, key: node.id + '#' + i }))
@@ -91,7 +91,7 @@ const testOutXp = node => Math.max(25, examStepsOf(node).length * 25);
 const passMark = total => Math.max(1, Math.ceil(total * 0.8));
 /* A test-out attempt is itself one-shot. Without this, a level whose check is
    a single multiple-choice question could be guessed open on the third try.
-   The attempt is spent when the test STARTS — banking it on the result instead
+   The attempt is spent when the test STARTS - banking it on the result instead
    would let you peek at question one, back out, and come again clean. */
 const examLocked = key => !!(state.outUsed || {})[key];
 const spendAttempt = key => { (state.outUsed || (state.outUsed = {}))[key] = Date.now(); save(); };
@@ -196,7 +196,7 @@ function openTrack(tr) {
     if (!chDone && !examLocked('s:' + tr.id + ':' + ci) &&
         chapterExamSteps(ch).length >= 3) {
       const t = el('button', 'testout-btn', '⚡ Test out');
-      t.title = 'Skip the lessons — pass the section\'s checks instead';
+      t.title = 'Skip the lessons - pass the section\'s checks instead';
       t.onclick = e => { e.stopPropagation(); buzz(8); examIntro(chapterExam(tr, ch, ci)); };
       head.appendChild(t);
     }
@@ -209,7 +209,7 @@ function openTrack(tr) {
       const testedOut = isDone && state.done[n.id].out;
       const isNext = firstUndone && n.id === firstUndone.id;
       const b = el('button', 'node' + (isDone ? ' done' : '') + (testedOut ? ' out' : '') + (isNext ? ' next' : ''));
-      if (testedOut) b.title = 'Tested out — cleared without the lessons';
+      if (testedOut) b.title = 'Tested out - cleared without the lessons';
       b.innerHTML = `<span class="n-num">${String(idx).padStart(2, '0')}</span>
         <span class="n-ico">${isDone ? (testedOut ? '⚡' : '✓') : n.ico}</span>
         <span class="n-lbl">${esc(n.name)}</span>`;
@@ -242,7 +242,7 @@ function playNode(tr, node) {
 
 function playReview() {
   const pool = reviewPool();
-  if (!pool.length) return toast('Nothing due — go clear a level');
+  if (!pool.length) return toast('Nothing due - go clear a level');
   const picked = pool.slice(0, 10);
   cur = { track: null, node: null, review: true, steps: picked, i: 0, xp: 0, streak: 0, misses: 0 };
   $('#play-title').textContent = 'Review';
@@ -253,7 +253,7 @@ function playReview() {
 /* ============================================================
    TEST OUT
    Prove you already know it. A test is the checks with the lessons
-   stripped out and one attempt per question — pass and the level (or the
+   stripped out and one attempt per question - pass and the level (or the
    whole section) marks off; fail and the only thing spent is the attempt,
    and the misses land on the Review pile. Nothing already cleared is ever
    downgraded: an award is Math.max(what you had, what the test is worth).
@@ -275,7 +275,7 @@ const nodeExam = (tr, node) => ({
   kind: 'level', key: 'n:' + node.id, track: tr, nodes: [node],
   steps: shuffle(examStepsOf(node)), title: node.name, where: tr.name
 });
-/* Keystroke levels cannot be scored — you press until the line matches — so no
+/* Keystroke levels cannot be scored - you press until the line matches - so no
    question comes from them, but passing the section still clears them: a
    section you tested out of has to actually mark off. They stay replayable. */
 const chapterExam = (tr, ch, ci) => ({
@@ -308,9 +308,9 @@ function examIntro(cfg) {
       <div><b>${need}</b><span>To pass</span></div>
       <div><b>1</b><span>Attempt</span></div>
     </div>
-    <div class="callout warn"><b>One shot, all the way down.</b> No lessons, no hints, one try per question — and one try at the test. Starting spends that try, walking out mid-test included. Miss the mark and this ${section ? 'section' : 'level'} is yours to play through.</div>
+    <div class="callout warn"><b>One shot, all the way down.</b> No lessons, no hints, one try per question - and one try at the test. Starting spends that try, walking out mid-test included. Miss the mark and this ${section ? 'section' : 'level'} is yours to play through.</div>
     <div class="callout tip"><b>Nothing to lose.</b> Fail and you keep your XP and your progress. Every question you miss goes onto the Review pile, and the lessons are still there.</div>` +
-    (cfg.drills ? `<div class="callout"><b>${cfg.drills} keystroke level${cfg.drills === 1 ? '' : 's'}</b> here can't be quizzed — muscle memory is not something a question checks. Passing clears ${cfg.drills === 1 ? 'it' : 'them'} too, and ${cfg.drills === 1 ? 'it is' : 'they are'} still there to play.</div>` : '');
+    (cfg.drills ? `<div class="callout"><b>${cfg.drills} keystroke level${cfg.drills === 1 ? '' : 's'}</b> here can't be quizzed - muscle memory is not something a question checks. Passing clears ${cfg.drills === 1 ? 'it' : 'them'} too, and ${cfg.drills === 1 ? 'it is' : 'they are'} still there to play.</div>` : '');
   stage.appendChild(card);
 
   const cta = el('div', 'cta');
@@ -388,7 +388,7 @@ function stepLesson(stage, s) {
   const b = el('button', 'btn', s.cta || 'Got it →');
   b.onclick = () => { buzz(6); nextStep(10); };
   cta.appendChild(b);
-  // Offered while the level is still all lesson so far — once you have
+  // Offered while the level is still all lesson so far - once you have
   // answered a check, testing out of it is no longer skipping anything.
   if (cur && cur.node && !cur.review && !cur.exam && !state.done[cur.node.id] &&
       canTestOut(cur.node) && !examLocked('n:' + cur.node.id) &&
@@ -433,7 +433,7 @@ function linkTerms(root) {
   while ((t = walker.nextNode())) texts.push(t);
 
   // Word boundaries only where the term actually starts/ends with a word
-  // character — otherwise `$PATH`, `~/.zshrc` and `.gitignore` never match.
+  // character - otherwise `$PATH`, `~/.zshrc` and `.gitignore` never match.
   const pattern = t => (/^\w/.test(t) ? '\\b' : '') + escRe(t) + (/\w$/.test(t) ? '\\b' : '');
 
   texts.forEach(textNode => {
@@ -441,7 +441,7 @@ function linkTerms(root) {
 
     // Collect every candidate first, then apply right-to-left. Scanning
     // forwards and advancing past each hit silently drops any shorter term
-    // that sits earlier in the sentence — "zsh" always lost to "bash".
+    // that sits earlier in the sentence - "zsh" always lost to "bash".
     const found = [];
     for (const term of TERM_KEYS) {
       if (used.has(term)) continue;
@@ -486,7 +486,7 @@ function openSheet(termKey) {
   const cmd = $('#sheet-cmd');
   cmd.hidden = !it.cmd;
   if (it.cmd) cmd.textContent = it.cmd;
-  // App and tool entries can carry a homepage — shown here rather than inline
+  // App and tool entries can carry a homepage - shown here rather than inline
   // in a lesson, so a definition never yanks you out of the level.
   const link = $('#sheet-link');
   link.hidden = !it.url;
@@ -494,7 +494,7 @@ function openSheet(termKey) {
   const s = $('#sheet');
   s.hidden = false;
   // Forcing a reflow gives the transition its start state synchronously.
-  // requestAnimationFrame does NOT fire in a backgrounded tab — using it here
+  // requestAnimationFrame does NOT fire in a backgrounded tab - using it here
   // left the sheet shown-but-not-open: an invisible full-screen click blocker.
   void s.offsetHeight;
   s.classList.add('open');
@@ -640,7 +640,7 @@ function stepBuild(stage, s) {
     if (!right) {
       line.classList.add('bad'); buzz([30, 40, 30]);
       setTimeout(() => line.classList.remove('bad'), 400);
-      if (cur.exam) {                       // one shot — no hint, no retry
+      if (cur.exam) {                       // one shot - no hint, no retry
         answered = true;
         drawLine();
         resolve(false, `<b>It was <code>${esc(s.answer.join(' '))}</code>.</b> ` + s.why, card, 0);
@@ -683,7 +683,7 @@ function stepBuild(stage, s) {
 function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
 /* ============================================================
-   KEYS — the line simulator ("keystroke golf")
+   KEYS - the line simulator ("keystroke golf")
    A real readline-ish model of the command line. Press the actual
    chords on a desktop, tap the same chords on a phone; both drive
    one state machine. Scored against par, so it measures speed
@@ -850,7 +850,7 @@ function stepKeys(stage, s) {
     lineEl.classList.add('ok');
     const underPar = presses <= s.par;
     const note = underPar
-      ? `<b class="par-hit">⛳️ Par ${s.par} — hit in ${presses}.</b> `
+      ? `<b class="par-hit">⛳️ Par ${s.par} - hit in ${presses}.</b> `
       : `<b class="par-miss">${presses} keystrokes; par is ${s.par}.</b> `;
     if (!underPar && presses > s.par + 4) recordMiss();
     resolve(true, note + s.why, card, underPar ? 40 : 25);
@@ -1131,7 +1131,7 @@ function resolve(right, why, card, gain, keepMiss) {
   // A test pays out once, at the end, so per-question XP is not shown.
   const label = !right ? '✗ Not quite'
     : keepMiss ? '✓ That\'s the one'
-    : cur.exam ? `✓ Correct — ${cur.right} of ${cur.exam.total}`
+    : cur.exam ? `✓ Correct - ${cur.right} of ${cur.exam.total}`
     : cur.streak >= 3 ? `🔥 ${cur.streak} in a row! +${gain + bonus} XP`
     : `✓ Correct  +${gain} XP`;
   const fb = el('div', 'feedback ' + (right ? 'good' : 'bad'));
@@ -1250,16 +1250,16 @@ function finishExam() {
     <h2>Tested out</h2>
     <p>${cur.right} of ${ex.total}. ${cleared
       ? `<b>${cleared}</b> level${cleared === 1 ? '' : 's'} cleared without sitting through a single lesson.`
-      : 'Nothing new to clear — but the recall is solid.'}</p>
+      : 'Nothing new to clear - but the recall is solid.'}</p>
     <div class="score-grid">
       <div><b>${cur.right}/${ex.total}</b><span>Score</span></div>
       <div><b>+${gained}</b><span>XP gained</span></div>
       <div><b>${dn}/${total}</b><span>Track</span></div>
     </div>
-    <p class="exam-note">Tested-out levels still come back in Review — that is how you find out whether you really knew it.</p>` : `
+    <p class="exam-note">Tested-out levels still come back in Review - that is how you find out whether you really knew it.</p>` : `
     <div class="big">📚</div>
     <h2>Not this time</h2>
-    <p>${cur.right} of ${ex.total}, and you needed ${ex.need}. Nothing lost: no XP spent, nothing cleared, and every question you missed is on the Review pile. The shortcut past this ${ex.kind} is closed now — play it through.</p>
+    <p>${cur.right} of ${ex.total}, and you needed ${ex.need}. Nothing lost: no XP spent, nothing cleared, and every question you missed is on the Review pile. The shortcut past this ${ex.kind} is closed now - play it through.</p>
     <div class="score-grid">
       <div><b>${cur.right}/${ex.total}</b><span>Score</span></div>
       <div><b>${ex.need}</b><span>Needed</span></div>
@@ -1403,7 +1403,7 @@ function openSync() {
 
   body.appendChild(el('h3', 'reader-h', 'Import to this device'));
   const inBox = el('div', 'gl-item');
-  inBox.innerHTML = `<p>Pasting merges with what is already here — it keeps the higher XP for any level you have cleared on both. Nothing is lost.</p>`;
+  inBox.innerHTML = `<p>Pasting merges with what is already here - it keeps the higher XP for any level you have cleared on both. Nothing is lost.</p>`;
   const inTa = el('textarea', 'sync-box'); inTa.rows = 4; inTa.placeholder = 'Paste your code here…';
   inTa.autocapitalize = 'none'; inTa.spellcheck = false;
   const imp = el('button', 'btn sec', '⬇︎ Import and merge');
@@ -1434,7 +1434,7 @@ function openSync() {
     state.xp = Object.values(state.done).reduce((a, r) => a + (r.xp || 0), 0);
     save();
     renderHome();
-    toast(`Merged — ${Object.keys(state.done).length} levels, ${state.xp} XP`);
+    toast(`Merged - ${Object.keys(state.done).length} levels, ${state.xp} XP`);
     show('home');
   };
   inBox.append(inTa, imp);
@@ -1473,7 +1473,7 @@ $('#btn-reset').onclick = () => {
 renderHome();
 show('home');
 
-// Offline support in production only — a service worker during local dev
+// Offline support in production only - a service worker during local dev
 // just serves you yesterday's code and wastes an afternoon.
 if ('serviceWorker' in navigator && !/^(localhost|127\.|\[::1\])/.test(location.hostname)) {
   navigator.serviceWorker.register('sw.js').catch(() => {});

@@ -1,4 +1,4 @@
-/* Tiny SVG diagram kit — no deps, theme-aware via currentColor-ish literals. */
+/* Tiny SVG diagram kit - no deps, theme-aware via currentColor-ish literals. */
 
 const CY = '#39e6ff', MG = '#ff4fd8', LM = '#7cff7c', AM = '#ffc44d', VI = '#a07cff', DIM = '#8f93b5', RD = '#ff5c6e';
 
@@ -43,11 +43,11 @@ export const branchDiverge = wrap(520, 200,
 );
 
 export const mergeVsRebase = wrap(540, 250,
-  txt(10, 18, 'MERGE — keeps both paths, adds a knot', LM, 11, 'start') +
+  txt(10, 18, 'MERGE - keeps both paths, adds a knot', LM, 11, 'start') +
   line(30, 70, 180, 70) + line(180, 70, 240, 42, MG) + line(240, 42, 340, 42, MG) + line(340, 42, 400, 70, MG) + line(180, 70, 400, 70) +
   dot(40, 70, CY, 10) + dot(180, 70, CY, 10) + dot(270, 42, MG, 10) + dot(340, 42, MG, 10) + dot(300, 70, CY, 10) + dot(410, 70, LM, 12) +
   txt(455, 74, 'merge commit', LM, 10, 'start') +
-  txt(10, 150, 'REBASE — replays your work on top, one clean line', AM, 11, 'start') +
+  txt(10, 150, 'REBASE - replays your work on top, one clean line', AM, 11, 'start') +
   line(30, 200, 470, 200) +
   dot(40, 200, CY, 10) + dot(140, 200, CY, 10) + dot(240, 200, CY, 10) + dot(330, 200, AM, 10) + dot(420, 200, AM, 10) +
   txt(330, 232, 'your commits, rewritten', AM, 10) + txt(90, 232, 'main', CY, 10)
@@ -64,12 +64,12 @@ export const remoteSync = wrap(540, 200,
 );
 
 export const worktreeDiagram = wrap(540, 230,
-  box(20, 20, 500, 42, VI, 'ONE repository — one .git database, one history') +
+  box(20, 20, 500, 42, VI, 'ONE repository - one .git database, one history') +
   line(120, 62, 120, 100, VI) + line(400, 62, 400, 100, VI) + line(270, 62, 270, 100, VI) +
   box(20, 100, 150, 66, CY, '~/proj', 'branch: main') +
   box(195, 100, 150, 66, MG, '~/proj-fix', 'branch: hotfix') +
   box(370, 100, 150, 66, AM, '~/proj-exp', 'branch: spike') +
-  txt(270, 200, 'three folders open at once — no stashing, no switching', DIM, 11) +
+  txt(270, 200, 'three folders open at once - no stashing, no switching', DIM, 11) +
   txt(270, 220, 'a branch can only be checked out in one worktree at a time', DIM, 10)
 );
 
@@ -79,14 +79,14 @@ export const prFlow = wrap(540, 160,
   line(171, 60, 258, 60) + dot(271, 60, MG, 12) + txt(271, 96, 'push', DIM, 10) +
   line(284, 60, 371, 60) + dot(384, 60, AM, 12) + txt(384, 96, 'open PR', DIM, 10) +
   line(397, 60, 470, 60) + dot(487, 60, LM, 14) + txt(487, 96, 'merge', LM, 10) +
-  txt(270, 136, 'review + CI happen at the PR — that is the whole point', DIM, 11)
+  txt(270, 136, 'review + CI happen at the PR - that is the whole point', DIM, 11)
 );
 
 export const detachedHead = wrap(520, 150,
   line(50, 80, 460, 80) +
   dot(60, 80, DIM, 11) + dot(170, 80, DIM, 11) + dot(285, 80, CY, 13) + dot(430, 80, DIM, 11) +
   txt(430, 46, 'main', DIM, 11) + txt(285, 40, 'HEAD', CY, 12) + txt(285, 118, 'you are standing here,', CY, 10) +
-  txt(285, 134, 'not on any branch — commits here can get lost', DIM, 10)
+  txt(285, 134, 'not on any branch - commits here can get lost', DIM, 10)
 );
 
 /* ---- phase 1 diagrams ---- */
@@ -104,14 +104,14 @@ export const httpCycle = wrap(540, 210,
 );
 
 export const webhookFlow = wrap(540, 235,
-  txt(12, 18, 'NORMAL API — you ask, they answer', CY, 11, 'start') +
+  txt(12, 18, 'NORMAL API - you ask, they answer', CY, 11, 'start') +
   box(20, 30, 160, 46, CY, 'You') + box(340, 30, 160, 46, DIM, 'Stripe') +
   line(180, 44, 340, 44, CY) + txt(260, 38, '"did it pay?"', CY, 10) +
   line(340, 62, 180, 62, DIM) + txt(260, 74, '"not yet"  ×1000', DIM, 10) +
-  txt(12, 128, 'WEBHOOK — they call you, once, when it happens', MG, 11, 'start') +
+  txt(12, 128, 'WEBHOOK - they call you, once, when it happens', MG, 11, 'start') +
   box(20, 140, 160, 46, MG, 'Your endpoint') + box(340, 140, 160, 46, DIM, 'Stripe') +
   line(340, 163, 180, 163, MG) + txt(260, 156, 'POST  payment.succeeded', MG, 10) +
-  txt(270, 212, 'the call is inverted — which is why it needs its own auth', AM, 11)
+  txt(270, 212, 'the call is inverted - which is why it needs its own auth', AM, 11)
 );
 
 export const harnessLoop = wrap(540, 225,
@@ -127,20 +127,20 @@ export const harnessLoop = wrap(540, 225,
 );
 
 export const envLayers = wrap(540, 240,
-  box(15, 20, 505, 40, DIM, 'YOUR MACHINE — everything is reachable') +
-  box(35, 72, 470, 40, CY, 'CONTAINER / VM — its own filesystem and network') +
-  box(60, 124, 425, 40, LM, 'SANDBOX — a folder and a rule set') +
-  box(90, 176, 370, 40, AM, 'READ-ONLY — it can look, it cannot change') +
+  box(15, 20, 505, 40, DIM, 'YOUR MACHINE - everything is reachable') +
+  box(35, 72, 470, 40, CY, 'CONTAINER / VM - its own filesystem and network') +
+  box(60, 124, 425, 40, LM, 'SANDBOX - a folder and a rule set') +
+  box(90, 176, 370, 40, AM, 'READ-ONLY - it can look, it cannot change') +
   txt(270, 232, 'each layer shrinks the blast radius. pick by what a mistake costs.', DIM, 10)
 );
 
 /* ---- terminal 101 ---- */
 
 export const terminalLayers = wrap(540, 250,
-  box(15, 18, 505, 54, MG, 'TERMINAL EMULATOR — Ghostty, iTerm2, Terminal.app',
-    'the window · fonts, colours, tabs, splits, copy & paste') +
+  box(15, 18, 505, 54, MG, 'TERMINAL EMULATOR - Ghostty, iTerm2, Terminal.app',
+    'the window · fonts, colors, tabs, splits, copy & paste') +
   line(270, 72, 270, 96, MG) +
-  box(60, 96, 420, 54, CY, 'SHELL — zsh, bash, fish',
+  box(60, 96, 420, 54, CY, 'SHELL - zsh, bash, fish',
     'reads your line · history, tab completion, aliases') +
   line(270, 150, 270, 174, CY) +
   box(130, 174, 280, 46, LM, 'THE PROGRAM', 'git, npm, node, curl') +
@@ -159,7 +159,7 @@ export const lineAnatomy = wrap(540, 165,
 /* ---- prove your ground ---- */
 
 export const threeNames = wrap(540, 215,
-  txt(270, 20, 'THREE INDEPENDENT LABELS — none of them checks the others', DIM, 10) +
+  txt(270, 20, 'THREE INDEPENDENT LABELS - none of them checks the others', DIM, 10) +
   box(15, 36, 160, 58, MG, 'WORKSPACE', '"san-antonio"') +
   box(190, 36, 160, 58, AM, 'FOLDER', '~/code/nobc-os') +
   box(365, 36, 160, 58, CY, 'BRANCH', 'event-render-bug') +
@@ -188,6 +188,6 @@ export const shipChain = wrap(540, 175,
   line(184, 58, 275, 58) +
   dot(290, 58, MG, 13) + txt(290, 96, 'built', DIM, 10) + txt(290, 112, 'from THAT SHA?', DIM, 9) +
   line(304, 58, 395, 58) +
-  dot(410, 58, LM, 15) + txt(410, 96, 'live', LM, 10) + txt(410, 112, 'behaviour seen?', DIM, 9) +
+  dot(410, 58, LM, 15) + txt(410, 96, 'live', LM, 10) + txt(410, 112, 'behavior seen?', DIM, 9) +
   txt(270, 152, 'four links. each needs its own evidence.', AM, 11)
 );
