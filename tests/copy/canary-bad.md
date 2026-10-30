@@ -15,3 +15,7 @@ Tap here — your call.
 Lorem ipsum dolor sit amet.
 
 the the level
+
+That is not a policy - it is a habit.
+
+Use it alongside Claude Code instead of instead of it.

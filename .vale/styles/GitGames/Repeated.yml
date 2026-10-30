@@ -1,8 +1,9 @@
 extends: existence
-message: "'%s' - a word is repeated."
+message: "'%s' - a word or phrase is repeated."
 level: error
 ignorecase: true
-# "Esc Esc" is a real key chord, "N" a template hole from extraction, and a
+# "Esc Esc" is a real key chord; "N", "CODE" and "KEY" are placeholders the
+# extractor puts where template holes and code spans were; and a
 # repeat that opens a quotation ("fix fix") is an example, not a typo.
 raw:
-  - '(?<!["\u201c])\b(?!(?:Esc|N)\b)([A-Za-z]+)\s+\1\b'
+  - '(?<!["\u201c])\b(?!(?:Esc|N)\b)(?!(?:[A-Za-z]+\s+){0,2}(?:CODE|KEY)\b)((?:[A-Za-z]+\s+){0,2}[A-Za-z]+)\s+\1\b'
