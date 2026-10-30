@@ -4,7 +4,7 @@
   "type": "module",
   "description": "Dev-only tooling. The app itself ships with zero runtime dependencies and no build step.",
   "scripts": {
-    "serve": "python3 -m http.server 4173",
+    "serve": "node tools/serve.mjs",
     "test:sim": "node tests/sim.test.mjs",
     "test:e2e": "playwright test",
     "test:e2e:update": "playwright test --update-snapshots",
