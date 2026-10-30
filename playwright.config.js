@@ -13,9 +13,10 @@ export default defineConfig({
     trace: 'retain-on-failure',
   },
   expect: {
-    // Fonts render slightly differently across Linux images. Small tolerance,
-    // not a blanket pass: a moved button or clipped line still fails.
-    toHaveScreenshot: { maxDiffPixelRatio: 0.01, animations: 'disabled' },
+    // Baselines come from one pinned image (see CI), where rendering is
+    // deterministic, so any changed pixel counts. A 1% allowance let a changed
+    // line of copy pass unnoticed.
+    toHaveScreenshot: { maxDiffPixels: 0, animations: 'disabled' },
   },
   projects: [
     { name: 'phone', use: { ...devices['iPhone 13'], browserName: 'chromium' } },
