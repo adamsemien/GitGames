@@ -1,6 +1,7 @@
 // Visual snapshots of the screens a first-time player sees. A diff here means
-// the screen changed - review the image, then run `npm run test:e2e:update`
-// only if the change was intended.
+// the screen changed - review the image, then update only if it was intended.
+// Baselines come from CI's pinned Playwright image (fonts differ elsewhere):
+// take the *-actual.png files from the e2e-report artifact of a CI run.
 import { test, expect } from '@playwright/test';
 import { TRACKS, nodesOf, openHome, openTrack, openLevel, playStep } from './helpers.js';
 
@@ -19,7 +20,9 @@ async function settle(page) {
 }
 const shot = async (page, name) => {
   await settle(page);
-  await expect(page).toHaveScreenshot(name, { fullPage: true, stylePath: STYLE });
+  // Soft: a mismatch still fails the test, but every later screenshot in the
+  // test is still taken, so one run shows every changed screen.
+  await expect.soft(page).toHaveScreenshot(name, { fullPage: true, stylePath: STYLE });
 };
 
 test('home', async ({ page }) => {
