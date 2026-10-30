@@ -347,9 +347,13 @@ p code,li code{background:rgba(57,230,255,.11);border:1px solid rgba(57,230,255,
 .toast{position:fixed;left:50%;bottom:calc(28px + var(--safe-b));transform:translate(-50%,140%);z-index:99;
   background:rgba(20,20,34,.97);border:1px solid var(--line2);border-radius:14px;padding:12px 18px;
   font-size:14px;font-weight:700;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  transition:transform .35s var(--ease-pop);
+  transition:transform .35s var(--ease-pop),visibility 0s linear .35s;
+  /* Hidden means hidden: a 140% nudge left ~18px of an empty pill above the
+     bottom edge, catching taps. Push past the edge and drop it from hit-testing. */
+  visibility:hidden;pointer-events:none;
   max-width:88vw;text-align:center;box-shadow:var(--shadow-lg),inset 0 1px 0 rgba(255,255,255,.08)}
-.toast.show{transform:translate(-50%,0)}
+.toast:not(.show){transform:translate(-50%,calc(100% + 40px + var(--safe-b)))}
+.toast.show{transform:translate(-50%,0);visibility:visible;transition:transform .35s var(--ease-pop),visibility 0s}
 #confetti{position:fixed;inset:0;pointer-events:none;z-index:98;overflow:hidden}
 .cf{position:absolute;width:9px;height:14px;border-radius:2px;animation:fall linear forwards}
 @keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:0}}
