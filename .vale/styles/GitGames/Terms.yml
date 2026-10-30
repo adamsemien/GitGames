@@ -1,0 +1,22 @@
+extends: substitution
+message: "Use '%s', not '%s'."
+level: error
+ignorecase: false
+swap:
+  Github: GitHub
+  Gitlab: GitLab
+  Javascript: JavaScript
+  Typescript: TypeScript
+  '(?:NodeJS|Nodejs|NodeJs)': Node.js
+  '(?:[Ww]eb hook|[Ww]eb-hook)s?': webhook
+  '[Ee]-mail': email
+  Open AI: OpenAI
+  '(?:Chat GPT|ChatGpt|chatGPT)': ChatGPT
+  Claude code: Claude Code
+  '(?:MacOS|Mac OS|MacOs)': macOS
+  '(?:Vscode|VScode|VS code|vscode)': VS Code
+  '(?:Postgresql|PostgresQL|PostGres)': PostgreSQL
+  '(?:Linkedin|linkedIn)': LinkedIn
+  pull-requests?: pull request
+  '(?:PR''s|PR’s)': PRs
+  '(?:[Ll]og-in) to': log in to

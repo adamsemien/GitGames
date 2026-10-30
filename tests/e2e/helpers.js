@@ -100,3 +100,29 @@ export async function clippedText(page) {
     return [...new Set(out)];
   });
 }
+
+/** Values that leaked from a JS bug into visible copy. Code blocks are allowed to say "undefined". */
+export async function brokenRenders(page) {
+  return page.evaluate(() => {
+    const out = [];
+    const walker = document.createTreeWalker(document.querySelector('.screen.active') || document.body, NodeFilter.SHOW_TEXT);
+    for (let n; (n = walker.nextNode());) {
+      if (n.parentElement.closest('code, pre, kbd, .termbox, .gl-cmd, .diagram, script, style')) continue;
+      const LEAK = /\bundefined\b|\bNaN\b|\[object Object\]|\$\{[^}]*\}/;
+      const m = n.nodeValue.match(LEAK);
+      if (!m) continue;
+      // Lessons quote real error messages ("undefined is not a function"). A quote
+      // can open in a neighbouring text node, so judge the whole paragraph.
+      const block = n.parentElement.closest('p, li, h1, h2, h3, button, .callout, .feedback') || n.parentElement;
+      const t = [...block.childNodes].map(function prose(c) {
+        if (c.nodeType === 3) return c.nodeValue;
+        if (c.nodeType !== 1 || c.matches('code, pre, kbd, .termbox, .gl-cmd')) return ' ';
+        return [...c.childNodes].map(prose).join('');
+      }).join('');
+      const quoted = i => (t.slice(0, i).match(/["\u201c\u201d]/g) || []).length % 2 === 1;
+      if ([...t.matchAll(new RegExp(LEAK.source, 'g'))].every(x => quoted(x.index))) continue;
+      out.push(`"${m[0]}" in: ${n.nodeValue.trim().slice(0, 80)}`);
+    }
+    return out;
+  });
+}

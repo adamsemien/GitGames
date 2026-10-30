@@ -1,0 +1,7 @@
+extends: existence
+message: "Em dash: use a spaced hyphen ' - ' instead of '%s'."
+level: error
+nonword: true
+tokens:
+  - '—'
+  - '\s–\s'

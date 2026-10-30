@@ -1,0 +1,13 @@
+extends: existence
+message: "'%s' looks like placeholder or unfinished copy."
+level: error
+ignorecase: true
+# Rendered 'undefined' / 'NaN' are caught in the E2E sweep instead: as copy,
+# they are the subject of real lessons (the Debugging track).
+tokens:
+  - lorem ipsum
+  - '\bTODO\b'
+  - '\bTBD\b'
+  - '\bFIXME\b'
+  - '\bXXX\b'
+  - '\[(?:insert|placeholder|your [a-z]+)[^\]]*\]'

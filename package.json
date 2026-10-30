@@ -9,11 +9,13 @@
     "test:e2e": "playwright test",
     "test:e2e:update": "playwright test --update-snapshots",
     "strings": "node tools/extract-strings.mjs",
-    "lint:copy": "node tools/extract-strings.mjs && vale --config .vale.ini build/strings && node tools/harper-check.mjs",
+    "lint:copy": "node tools/lint-copy.mjs",
     "qa:midscene": "playwright test --config playwright.midscene.config.js"
   },
   "devDependencies": {
     "@playwright/test": "1.64.1",
+    "acorn": "8.19.0",
+    "acorn-walk": "8.3.5",
     "harper.js": "3.0.0"
   }
 }

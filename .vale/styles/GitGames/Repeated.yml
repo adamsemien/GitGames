@@ -1,0 +1,8 @@
+extends: existence
+message: "'%s' - a word is repeated."
+level: error
+ignorecase: true
+# "Esc Esc" is a real key chord, "N" a template hole from extraction, and a
+# repeat that opens a quotation ("fix fix") is an example, not a typo.
+raw:
+  - '(?<!["\u201c])\b(?!(?:Esc|N)\b)([A-Za-z]+)\s+\1\b'

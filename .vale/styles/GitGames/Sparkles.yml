@@ -1,0 +1,6 @@
+extends: existence
+message: "'%s' - no sparkles as an AI marker."
+level: error
+nonword: true
+tokens:
+  - '✨'
